@@ -71,7 +71,7 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    padding: 28px 5%;
+    padding: 28px 4.2%;
     z-index: 10;
   }
 
@@ -80,8 +80,18 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    padding: 28px 5%;
+    padding: 28px 4.2%;
     z-index: 5;
+  }
+
+  .cinematic .opening-journey {
+    display: flex;
+    z-index: 2;
+    opacity: 0;
+  }
+
+  .cinematic .scroll-one .story-nav {
+    visibility: hidden;
   }
 
 }
@@ -96,9 +106,9 @@ body {
   background-color: #0b0f19;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
-  padding: 2rem 4rem 6rem;
+  padding: 2rem 4.2%;
 }
 
 .hero-bg {
@@ -189,13 +199,17 @@ body {
   color: #f1f5f9;
   text-shadow: 2px 4px 20px rgba(0, 0, 0, 0.7);
   width: 100%;
-  max-width: 1400px;
+  max-width: none;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   gap: 3rem;
-  padding: 0 2rem;
-  margin-top: 140px;
+  padding: 0;
+  margin-top: 0;
+}
+
+.hero-title h1 {
+  font-size: inherit;
 }
 
 .hero-title span {
@@ -207,7 +221,6 @@ body {
   flex-direction: column;
   align-items: flex-start;
   max-width: 450px;
-  margin-top: 4rem;
 }
 
 .tagline {
@@ -653,11 +666,11 @@ body {
 
 @media (max-width: 968px) {
   .hero {
-    padding: 1.5rem 1rem 3rem;
+    padding: 1.5rem 18px;
     height: 100vh;
   }
 
-  .hero-header {
+  .s2-header.hero-header {
     padding: 22px 18px;
   }
 
@@ -665,7 +678,9 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 2rem;
-    margin-top: 120px;
+    margin-top: 0;
+    padding: 0;
+    max-width: 1400px;
   }
 
   .hero-right {
@@ -675,7 +690,7 @@ body {
 
 @media (max-width: 1100px) {
   .scroll-one {
-    padding: 25px 3%;
+    padding: 25px 4.2%;
   }
 
   .scroll-layout {
@@ -874,7 +889,7 @@ body {
   left: 0;
 
   width: 100%;
-  padding: 28px 5%;
+  padding: 28px 4.2%;
 
   display: flex;
   justify-content: space-between;
@@ -987,6 +1002,8 @@ body {
   gap: 14px;
 
   color: rgba(255, 255, 255, 0.60);
+
+  transition: color 0.35s ease;
 }
 
 .s2-step-dot {
@@ -1003,6 +1020,8 @@ body {
   background: #171b20;
 
   z-index: 1;
+
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
 }
 
 .s2-step-number {
@@ -1027,14 +1046,26 @@ body {
   box-shadow: 0 0 14px rgba(223, 189, 130, 0.45);
 }
 
-.s2-current-step .s2-step-dot::after {
-  content: "";
+.opening-journey {
+  display: none;
+}
 
+.s2-gold-marker {
   position: absolute;
-  inset: 5px;
+  left: 5px;
+  top: 0;
+
+  width: 12px;
+  height: 12px;
 
   border-radius: 50%;
   background: linear-gradient(110deg, #d6a861, #f0d39a);
+  box-shadow: 0 0 14px rgba(223, 189, 130, 0.45);
+
+  pointer-events: none;
+  z-index: 2;
+
+  transition: top 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 
@@ -1043,7 +1074,7 @@ body {
   position: relative;
 
   width: 100%;
-  padding: 105px 4% 105px 15%;
+  padding: 105px 4.2% 105px 15%;
 
   display: grid;
 
@@ -1291,7 +1322,7 @@ body {
 .s2-location-pill {
   position: absolute;
 
-  left: 2.5%;
+  left: 4.2%;
   bottom: 25px;
 
   display: flex;
@@ -1337,7 +1368,7 @@ body {
 .s2-sound-control {
   position: absolute;
 
-  right: 2.5%;
+  right: 4.2%;
   bottom: 25px;
 
   display: flex;
@@ -1403,7 +1434,7 @@ body {
 
   .s2-main {
     padding-left: 12%;
-    padding-right: 3%;
+    padding-right: 4.2%;
     gap: 25px;
 
     grid-template-columns: minmax(0, 1fr) 340px;
@@ -1449,7 +1480,7 @@ body {
     color: #fff;
     font-family: "Cinzel", serif;
     font-size: 19px;
-    font-weight: 60;
+    font-weight: 600;
     letter-spacing: 4px;
     white-space: nowrap;
   }
@@ -1479,7 +1510,7 @@ body {
   }
 
   .s2-main {
-    padding: 115px 20px 145px;
+    padding: 115px 18px 145px;
 
     display: flex;
     flex-direction: column;
@@ -1532,7 +1563,7 @@ body {
   }
 
   .s2-location-pill {
-    left: 12px;
+    left: 18px;
     bottom: 14px;
 
     gap: 8px;
@@ -1552,7 +1583,7 @@ body {
   }
 
   .s2-sound-control {
-    right: 12px;
+    right: 18px;
     bottom: 14px;
 
     gap: 7px;
@@ -1949,7 +1980,7 @@ body {
 @media (max-width: 1100px) {
 
   .scroll-three {
-    padding: 0 3%;
+    padding: 0 4.2%;
   }
 
   .s3-city-image {
@@ -2109,6 +2140,37 @@ body {
   .s3-footer {
     padding-right: 14px;
     padding-left: 14px;
+  }
+
+}
+
+
+@media (max-width: 380px) {
+
+  .s2-header,
+  .hero-header,
+  .scroll-two-header,
+  .s3-header {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .hero {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .scroll-one {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .s2-location-pill {
+    left: 14px;
+  }
+
+  .s2-sound-control {
+    right: 14px;
   }
 
 }

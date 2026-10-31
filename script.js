@@ -1,590 +1,1496 @@
-const menuBtn = document.querySelector('.menu-btn');
-const mobileMenu = document.getElementById('mobileMenu');
-const menuLinks = mobileMenu ? mobileMenu.querySelectorAll('a') : [];
-const nav = document.querySelector('.nav');
+const hamburger = document.querySelector(".hamburger");
+const navMenu = document.querySelector(".nav-links");
 
-function closeMenu() {
-  if (!menuBtn || !mobileMenu) return;
-  menuBtn.classList.remove('active');
-  mobileMenu.classList.remove('active');
-}
+if (hamburger && navMenu) {
+  hamburger.addEventListener("click", () => {
+      hamburger.classList.toggle("active");
+      navMenu.classList.toggle("active");
+  })
 
-if (menuBtn && mobileMenu) {
-  menuBtn.addEventListener('click', (event) => {
-    event.stopPropagation();
-
-    const isOpening = !mobileMenu.classList.contains('active');
-    menuBtn.classList.toggle('active');
-    mobileMenu.classList.toggle('active');
-
-    if (isOpening && window.anime) {
-      anime.set(menuLinks, {
-        opacity: 0,
-        translateY: -15
+  document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => {
+          hamburger.classList.remove("active");
+          navMenu.classList.remove("active");
       });
-
-      anime({
-        targets: menuLinks,
-        opacity: [0, 1],
-        translateY: [-15, 0],
-        delay: anime.stagger(60),
-        duration: 450,
-        easing: 'easeOutCubic'
-      });
-    }
-  });
-
-  document.addEventListener('click', (event) => {
-    if (!menuBtn.contains(event.target) && !mobileMenu.contains(event.target)) {
-      closeMenu();
-    }
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeMenu();
   });
 }
 
-if (nav) {
-  const updateNav = () => nav.classList.toggle('scrolled', window.scrollY > 24);
-  window.addEventListener('scroll', updateNav, { passive: true });
-  updateNav();
+document.addEventListener("mousemove", (e) => {
+  const x = (window.innerWidth - e.pageX * 2) / 100;
+  const y = (window.innerHeight - e.pageY * 2) / 100;
+  const heroBg = document.querySelector(".hero-bg");
+  if (heroBg) {
+      heroBg.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`;
+  }
+});
+
+const hasGsap = typeof gsap !== "undefined";
+const hasScrollTrigger = typeof ScrollTrigger !== "undefined";
+
+if (hasGsap) {
+  gsap.registerPlugin(...[ScrollTrigger, typeof ScrollToPlugin !== "undefined" ? ScrollToPlugin : null].filter(Boolean));
 }
 
-(function () {
-  const journey = document.getElementById('journey');
-  if (!journey) return;
+if (hasGsap && hasScrollTrigger) {
+  document.documentElement.classList.add("cinematic");
+}
 
-  const heroScene = document.getElementById('hero');
-  const noticeScene = document.getElementById('scroll1');
-  const exploreScene = document.getElementById('scroll2');
-  const feelScene = document.getElementById('scroll3');
-  const scenes = [heroScene, noticeScene, exploreScene, feelScene].filter(Boolean);
+const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-  const layers = {};
-  document.querySelectorAll('.city-bg').forEach((layer) => {
-    layers[layer.dataset.bg] = layer;
+function setStoryStep(step) {
+  document.querySelectorAll(".story-step").forEach((s) => {
+      s.classList.toggle("active", s.getAttribute("data-step") === step);
   });
+}
 
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const hasGSAP = Boolean(window.gsap && window.ScrollTrigger);
+function setJourneyStep(step) {
+  document.querySelectorAll(".s2-journey-step").forEach((s) => {
+    s.classList.toggle("s2-current-step", s.getAttribute("data-journey-step") === step);
+  });
+  positionJourneyMarker();
+}
 
-  function enableSimpleMode() {
-    document.body.classList.add('reduced-motion');
+function positionJourneyMarker() {
+  const rail = document.querySelector(".opening-journey");
+  if (!rail || !rail.offsetHeight) return;
 
-    const modeButton = exploreScene.querySelector('.mode-btn');
-    if (modeButton && feelScene) {
-      modeButton.addEventListener('click', () => {
-        window.scrollTo({
-          top: feelScene.offsetTop,
-          behavior: prefersReduced ? 'auto' : 'smooth'
+  const marker = rail.querySelector(".s2-gold-marker");
+  const active = rail.querySelector(".s2-journey-step.s2-current-step");
+  const dot = active && active.querySelector(".s2-step-dot");
+  if (!marker || !dot) return;
+
+  const railRect = rail.getBoundingClientRect();
+  const dotRect = dot.getBoundingClientRect();
+  marker.style.top = `${dotRect.top - railRect.top + dotRect.height / 2 - marker.offsetHeight / 2}px`;
+}
+
+positionJourneyMarker();
+window.addEventListener("resize", positionJourneyMarker);
+window.addEventListener("load", positionJourneyMarker);
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(positionJourneyMarker);
+}
+
+if (hasGsap && hasScrollTrigger) {
+  const mm = gsap.matchMedia();
+  mm.add("(min-width: 761px) and (prefers-reduced-motion: no-preference)", () => {
+      let activeStage = "notice";
+      gsap.set(".hero", { autoAlpha: 1 });
+      gsap.set(".hero-bg", { scale: 1 });
+      gsap.set(".scroll-one", { autoAlpha: 1 });
+      gsap.set(".scroll-one-bg", { opacity: 1, scale: 1.28 });
+      gsap.set(".scroll-two", { autoAlpha: 1 });
+      gsap.set([
+          ".scroll-one .scroll-two-header",
+          ".scroll-one .story-copy",
+          ".scroll-one .detail-card",
+            ".scroll-one .scroll-footer"
+        ], { opacity: 0 });
+
+        gsap.set(".scroll-one .scroll-two-header", { y: -25 });
+        gsap.set(".opening-journey", { opacity: 0, x: -25 });
+        gsap.set(".scroll-one .story-copy", { scale: 0.94 });
+        gsap.set(".scroll-one .detail-card", { x: 50, filter: "blur(6px)" });
+        gsap.set(".scroll-one .scroll-footer", { y: 32 });
+
+        gsap.set(".scroll-two-bg", { opacity: 1, scale: 1.18 });
+
+        gsap.set([
+            ".scroll-two .s2-header",
+            ".scroll-two .s2-intro",
+            ".scroll-two .s2-panel",
+            ".scroll-two .s2-mode-card",
+            ".scroll-two .s2-location-pill",
+            ".scroll-two .s2-sound-control"
+        ], { opacity: 0 });
+
+        gsap.set(".scroll-two .s2-header", { y: -25 });
+        gsap.set(".scroll-two .s2-intro", { y: 30 });
+        gsap.set(".scroll-two .s2-panel", { x: 35, filter: "blur(8px)" });
+        gsap.set(".scroll-two .s2-mode-card", { y: 24 });
+        gsap.set(".scroll-two .s2-location-pill, .scroll-two .s2-sound-control", { y: 15 });
+
+        gsap.set(".scroll-three-bg", { scale: 1.18 });
+
+        gsap.set([
+            ".scroll-three .s3-header",
+            ".scroll-three .s3-intro",
+            ".scroll-three .s3-city-grid",
+            ".scroll-three .s3-footer"
+        ], { autoAlpha: 0 });
+
+        gsap.set(".scroll-three .s3-header", { y: -22 });
+        gsap.set(".scroll-three .s3-intro", { y: 28 });
+        gsap.set(".scroll-three .s3-city-grid", { y: 22, scale: 1.04 });
+        gsap.set(".scroll-three .s3-city-copy", { y: 10 });
+        gsap.set(".scroll-three .s3-footer", { y: 18 });
+
+        const openingTimeline = gsap.timeline({
+            scrollTrigger: {
+                id: "opening-pin",
+                trigger: ".opening",
+                start: "top top",
+                end: "+=620%",
+                pin: true,
+                scrub: true,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+                onUpdate: (self) => {
+                    const stage = self.progress >= 0.84
+                        ? "feel"
+                        : self.progress >= 0.58
+                            ? "explore"
+                            : "notice";
+                    if (stage === activeStage) return;
+                    activeStage = stage;
+                    setStoryStep(stage);
+                    setJourneyStep(stage);
+                }
+            }
         });
-      });
+
+        // ---- LANDING -> FIRST STREET ----
+        openingTimeline.to(".hero-bg", {
+            scale: 1.34,
+            ease: "none",
+            duration: 0.3
+        }, 0);
+
+        openingTimeline.to(".hero .hero-header", {
+            autoAlpha: 0,
+            y: -26,
+            duration: 0.1,
+            ease: "power2.out"
+        }, 0.02);
+
+        openingTimeline.to(".hero .hero-title", {
+            autoAlpha: 0,
+            y: -44,
+            duration: 0.14,
+            ease: "power2.out"
+        }, 0.06);
+
+        // Fade the whole landing shot away to reveal the street beneath it.
+        openingTimeline.to(".hero", {
+            autoAlpha: 0,
+            duration: 0.16,
+            ease: "none"
+        }, 0.14);
+
+        // The incoming background keeps moving, so the dissolve reads as one
+        // continuous push forward rather than a crossfade between stills.
+        openingTimeline.to(".scroll-one-bg", {
+            scale: 1.46,
+            ease: "none",
+            duration: 0.5
+        }, 0);
+
+        openingTimeline.to(".scroll-one .scroll-two-header", {
+            opacity: 1,
+            y: 0,
+            duration: 0.08,
+            ease: "power2.out"
+        }, 0.14);
+
+        openingTimeline.to(".opening-journey", {
+            opacity: 1,
+            x: 0,
+            duration: 0.08,
+            ease: "power2.out"
+        }, 0.16);
+
+        openingTimeline.to(".scroll-one .story-copy", {
+            opacity: 1,
+            scale: 1,
+            duration: 0.1,
+            ease: "power3.out"
+        }, 0.16);
+
+        openingTimeline.to(".scroll-one .detail-card", {
+            opacity: 1,
+            x: 0,
+            filter: "blur(0px)",
+            duration: 0.12,
+            ease: "power3.out"
+        }, 0.18);
+
+        openingTimeline.to(".scroll-one .scroll-footer", {
+            opacity: 1,
+            y: 0,
+            duration: 0.08,
+            ease: "power2.out"
+        }, 0.2);
+
+        // ---- FIRST STREET -> NEXT STREET ----
+        // The first street is pushed through and dissolved out while the next
+        // background is already scaling up underneath it. No viewport of
+        // travel or empty space separates the two pages.
+        openingTimeline.to(".scroll-one .scroll-two-header", {
+            autoAlpha: 0,
+            y: -24,
+            duration: 0.08,
+            ease: "power2.in"
+        }, 0.44);
+
+        openingTimeline.to(".scroll-one .story-copy", {
+            autoAlpha: 0,
+            scale: 1.08,
+            duration: 0.1,
+            ease: "power2.in"
+        }, 0.44);
+
+        openingTimeline.to(".scroll-one .detail-card", {
+            autoAlpha: 0,
+            x: 36,
+            filter: "blur(6px)",
+            duration: 0.1,
+            ease: "power2.in"
+        }, 0.45);
+
+        openingTimeline.to(".scroll-one .scroll-footer", {
+            autoAlpha: 0,
+            y: 24,
+            duration: 0.08,
+            ease: "power2.in"
+        }, 0.45);
+
+        openingTimeline.to(".scroll-one-bg", {
+            scale: 1.66,
+            ease: "none",
+            duration: 0.2
+        }, 0.44);
+
+        openingTimeline.to(".scroll-one", {
+            autoAlpha: 0,
+            duration: 0.16,
+            ease: "none"
+        }, 0.48);
+
+        // The next background moves throughout, so the scene change is a
+        // continuation of the same camera push.
+        openingTimeline.to(".scroll-two-bg", {
+            scale: 1.55,
+            ease: "none",
+            duration: 0.56
+        }, 0.44);
+
+        openingTimeline.to(".scroll-two .s2-header", {
+            opacity: 1,
+            y: 0,
+            duration: 0.08,
+            ease: "power2.out"
+        }, 0.56);
+
+        openingTimeline.to(".scroll-two .s2-intro", {
+            opacity: 1,
+            y: 0,
+            duration: 0.12,
+            ease: "power3.out"
+        }, 0.58);
+
+        openingTimeline.to(".scroll-two .s2-panel", {
+            opacity: 1,
+            x: 0,
+            filter: "blur(0px)",
+            duration: 0.14,
+            ease: "power3.out"
+        }, 0.6);
+
+        openingTimeline.to(".scroll-two .s2-mode-card", {
+            opacity: 1,
+            y: 0,
+            duration: 0.08,
+            stagger: 0.04,
+            ease: "power2.out"
+        }, 0.64);
+
+        openingTimeline.to(".scroll-two .s2-location-pill, .scroll-two .s2-sound-control", {
+            opacity: 1,
+            y: 0,
+            duration: 0.1,
+            ease: "power2.out"
+        }, 0.64);
+
+        // ---- SECOND STREET -> CITY SELECT ----
+        // The second street is pushed through and dissolved away, exactly
+        // like the earlier transitions. Its background keeps moving under the
+        // fade while the city background scales up from behind it.
+        openingTimeline.to(".scroll-two .s2-header", {
+            autoAlpha: 0,
+            y: -24,
+            duration: 0.08,
+            ease: "power2.in"
+        }, 0.74);
+
+        openingTimeline.to(".opening-journey", {
+            autoAlpha: 0,
+            x: -30,
+            duration: 0.08,
+            ease: "power2.in"
+        }, 0.74);
+
+        openingTimeline.to(".scroll-two .s2-intro", {
+            autoAlpha: 0,
+            y: -22,
+            duration: 0.08,
+            ease: "power2.in"
+        }, 0.75);
+
+        openingTimeline.to(".scroll-two .s2-panel", {
+            autoAlpha: 0,
+            x: 34,
+            filter: "blur(7px)",
+            duration: 0.09,
+            ease: "power2.in"
+        }, 0.75);
+
+        openingTimeline.to(".scroll-two .s2-mode-card", {
+            autoAlpha: 0,
+            y: 18,
+            duration: 0.07,
+            ease: "power2.in"
+        }, 0.75);
+
+        openingTimeline.to(".scroll-two .s2-location-pill, .scroll-two .s2-sound-control", {
+            autoAlpha: 0,
+            y: 16,
+            duration: 0.08,
+            ease: "power2.in"
+        }, 0.75);
+
+        openingTimeline.to(".scroll-two", {
+            autoAlpha: 0,
+            duration: 0.12,
+            ease: "none"
+        }, 0.78);
+
+        // Incoming city shot: same slow push-in used by every scene change.
+        openingTimeline.to(".scroll-three-bg", {
+            scale: 1.4,
+            ease: "none",
+            duration: 0.26
+        }, 0.74);
+
+        openingTimeline.to(".scroll-three .s3-header", {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.06,
+            ease: "power2.out"
+        }, 0.78);
+
+        openingTimeline.to(".scroll-three .s3-intro", {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.08,
+            ease: "power3.out"
+        }, 0.79);
+
+        openingTimeline.to(".scroll-three .s3-city-grid", {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.1,
+            ease: "power2.out"
+        }, 0.8);
+
+        openingTimeline.to(".scroll-three .s3-city-copy", {
+            y: 0,
+            duration: 0.06,
+            stagger: 0.015,
+            ease: "power2.out"
+        }, 0.82);
+
+        openingTimeline.to(".scroll-three .s3-footer", {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.06,
+            ease: "power2.out"
+        }, 0.83);
+    });
+
+    // Recalculate pin ranges once fonts/images have settled.
+    window.addEventListener("load", () => ScrollTrigger.refresh());
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => ScrollTrigger.refresh());
+    }
+}
+
+// In-page labels jump to the matching point of the pinned journey, so the
+// destination scene is fully composed instead of halfway through a dissolve.
+const OPENING_STAGE_PROGRESS = {
+    notice: 0.32,
+    explore: 0.8,
+    feel: 0.96,
+    choose: 0.96
+};
+
+function getOpeningTrigger() {
+    return hasScrollTrigger && typeof ScrollTrigger.getById === "function"
+        ? ScrollTrigger.getById("opening-pin")
+        : null;
+}
+
+function scrollToOpeningStage(progress, duration = 1.4) {
+    const trigger = getOpeningTrigger();
+    if (!trigger) return false;
+
+    const targetY = trigger.start + (trigger.end - trigger.start) * progress;
+
+    if (hasGsap && typeof ScrollToPlugin !== "undefined" && !reducedMotionQuery.matches) {
+        gsap.to(window, {
+            duration,
+            scrollTo: { y: targetY, offsetY: 0 },
+            ease: "power2.inOut"
+        });
+    } else {
+        window.scrollTo({ top: targetY, behavior: "auto" });
     }
 
-    let frame = 0;
+    return true;
+}
 
-    const updateBackground = () => {
-      const viewportCenter = window.innerHeight / 2;
-      let active = scenes[0];
-      let closest = Infinity;
-
-      scenes.forEach((scene) => {
-        const rect = scene.getBoundingClientRect();
-        const distance = Math.abs(rect.top + rect.height / 2 - viewportCenter);
-        if (distance < closest) {
-          closest = distance;
-          active = scene;
+const exploreBtn = document.getElementById("explore-btn");
+if (exploreBtn) {
+    exploreBtn.addEventListener("click", (e) => {
+        if (scrollToOpeningStage(OPENING_STAGE_PROGRESS.notice, 1.6)) {
+            e.preventDefault();
+            return;
         }
-      });
 
-      Object.keys(layers).forEach((name) => {
-        if (layers[name]) {
-          layers[name].style.opacity = name === active.dataset.scene ? '1' : '0';
+        const target = document.querySelector("#scroll-one");
+        if (!target) return;
+
+        e.preventDefault();
+        window.scrollTo({
+            top: target.getBoundingClientRect().top + window.scrollY,
+            behavior: "auto"
+        });
+    });
+}
+
+[
+    ['a[href="#cities"]', OPENING_STAGE_PROGRESS.feel]
+].forEach(([selector, progress]) => {
+    document.querySelectorAll(selector).forEach((link) => {
+        link.addEventListener("click", (e) => {
+            if (scrollToOpeningStage(progress)) e.preventDefault();
+        });
+    });
+});
+
+if (location.hash === "#cities") {
+    window.addEventListener("load", () => {
+        window.setTimeout(() => {
+            scrollToOpeningStage(OPENING_STAGE_PROGRESS.choose);
+        }, 60);
+    });
+}
+
+const s2ModeCards = document.querySelectorAll(".s2-mode-card");
+const s2StartButtons = document.querySelectorAll(".s2-start-button");
+
+let s2SelectedMode = "walking";
+
+s2ModeCards.forEach((card) => {
+    card.addEventListener("click", () => {
+        s2ModeCards.forEach((item) => {
+            item.classList.remove("s2-mode-selected");
+            item.setAttribute("aria-pressed", "false");
+        });
+
+        card.classList.add("s2-mode-selected");
+        card.setAttribute("aria-pressed", "true");
+        s2SelectedMode = card.dataset.mode;
+
+        const panel = card.closest(".s2-panel");
+        const label = panel ? panel.querySelector(".s2-button-label") : null;
+
+        if (label) {
+            if (s2SelectedMode === "driving") {
+                label.textContent = "START DRIVING";
+            } else {
+                label.textContent = "START WALKING";
+            }
         }
-      });
-    };
+    });
+});
 
-    const requestUpdate = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(() => {
-        frame = 0;
-        updateBackground();
-      });
-    };
+s2StartButtons.forEach((s2StartButton) => {
+    s2StartButton.addEventListener("click", () => {
+        if (scrollToOpeningStage(OPENING_STAGE_PROGRESS.choose)) return;
 
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
-    updateBackground();
-  }
+        const cities = document.querySelector("#cities");
+        if (!cities) return;
 
-  if (!hasGSAP || prefersReduced) {
-    enableSimpleMode();
-    return;
-  }
+        const targetY = cities.getBoundingClientRect().top + window.scrollY;
 
-  gsap.registerPlugin(ScrollTrigger);
-  ScrollTrigger.config({ ignoreMobileResize: true });
+        if (hasGsap && typeof ScrollToPlugin !== "undefined" && !reducedMotionQuery.matches) {
+            gsap.to(window, {
+                duration: 1.4,
+                scrollTo: { y: targetY, offsetY: 0 },
+                ease: "power2.inOut"
+            });
+        } else {
+            window.scrollTo({ top: targetY, behavior: "auto" });
+        }
+    });
+});
 
-  const heroContent = heroScene.querySelector('.hero-content');
-  const heroHint = heroScene.querySelector('.scroll-hint');
-
-  const noticeContent = noticeScene.querySelector('.scroll-content');
-  const noticeCard = noticeScene.querySelector('.detail-card');
-  const noticeProgress = noticeScene.querySelector('.progress-steps');
-  const noticeBar = noticeScene.querySelector('.bottom-bar');
-
-  const exploreContent = exploreScene.querySelector('.scroll-content');
-  const explorePanelHeader = exploreScene.querySelector('.mode-panel-header');
-  const exploreOptions = exploreScene.querySelectorAll('.mode-option');
-  const exploreButton = exploreScene.querySelector('.mode-btn');
-  const exploreProgress = exploreScene.querySelector('.progress-steps');
-  const exploreBar = exploreScene.querySelector('.bottom-bar');
-
-  const feelContent = feelScene.querySelector('.scroll-content');
-  const feelGallery = feelScene.querySelector('.destination-gallery');
-  const feelTrack = feelScene.querySelector('.destination-track');
-  const feelSlideImages = feelScene.querySelectorAll('.destination-slide img');
-  const destinationCurrent = feelScene.querySelector('.destination-current');
-  const destinationDots = feelScene.querySelectorAll('.destination-dot');
-  const feelPath = feelScene.querySelector('.feel-path');
-  const feelProgress = feelScene.querySelector('.progress-steps');
-  const feelBar = feelScene.querySelector('.bottom-bar');
-
-  // Each scene starts in its own directional pose, not a shared template.
-  gsap.set([noticeContent, exploreContent, feelContent], {
-    autoAlpha: 0,
-    filter: 'blur(9px)'
-  });
-  gsap.set(noticeContent, { x: 170, y: -12 });
-  gsap.set(exploreContent, { y: -80 });
-  gsap.set(feelContent, { y: 45 });
-
-  gsap.set(noticeCard, {
-    autoAlpha: 0,
-    y: 110,
-    scale: 0.9,
-    filter: 'blur(10px)'
-  });
-
-  gsap.set(explorePanelHeader, { autoAlpha: 0, y: -24 });
-  gsap.set(exploreOptions, {
-    autoAlpha: 0,
-    y: 90,
-    scale: 0.94,
-    rotation: (index) => (index === 0 ? -4 : 4)
-  });
-  gsap.set(exploreButton, { autoAlpha: 0, y: 30 });
-
-  gsap.set(feelGallery, {
-    autoAlpha: 0,
-    y: 100,
-    scale: 0.96,
-    filter: 'blur(8px)'
-  });
-  gsap.set(feelTrack, { xPercent: 0 });
-  gsap.set(feelSlideImages, { scale: 1.1 });
-  gsap.set(feelPath, {
-    autoAlpha: 0,
-    scaleX: 0,
-    transformOrigin: 'left center'
-  });
-
-  gsap.set([noticeProgress, exploreProgress, feelProgress], { autoAlpha: 0, x: -28 });
-  gsap.set([noticeBar, exploreBar, feelBar], { autoAlpha: 0, y: 20 });
-
-  gsap.set(layers.hero, { opacity: 1, scale: 1, yPercent: 0 });
-  gsap.set([layers.notice, layers.explore, layers.feel], {
-    opacity: 0,
-    scale: 1.06,
-    yPercent: 1.2
-  });
-
-  const cuts = [1.9, 4.6, 6.85];
-  let activeIndex = -1;
-
-  const timeline = gsap.timeline({
-    defaults: { ease: 'none' },
-    scrollTrigger: {
-      trigger: journey,
-      start: 'top top',
-      end: () => '+=' + Math.round(window.innerHeight * 5.2),
-      scrub: 1,
-      pin: true,
-      pinSpacing: true,
-      anticipatePin: 1,
-      invalidateOnRefresh: true,
-      onUpdate: (self) => updateActiveScene(self.progress)
+// ==========================================================================
+// CITY CONFIGURATION & DATA STRUCTURE
+// ==========================================================================
+const cityData = {
+    tokyo: {
+        name: "Tokyo",
+        coords: [139.6917, 35.6895],
+        endZoom: 15.5,
+        endPitch: 62,
+        endBearing: 28,
+        videoFile: "videos/tokyo.mp4",
+        country: "Japan",
+        tagline: "Shinjuku & Shibuya Neon Corridors"
+    },
+    paris: {
+        name: "Paris",
+        coords: [2.3522, 48.8566],
+        endZoom: 15.4,
+        endPitch: 62,
+        endBearing: -22,
+        videoFile: "videos/paris.mp4",
+        country: "France",
+        tagline: "Haussmann Boulevards & Seine Glow"
+    },
+    newyork: {
+        name: "New York",
+        coords: [-74.0060, 40.7128],
+        endZoom: 15.6,
+        endPitch: 63,
+        endBearing: -36,
+        videoFile: "videos/newyork.mp4",
+        country: "United States",
+        tagline: "Manhattan Canyons & 5th Avenue"
+    },
+    istanbul: {
+        name: "Istanbul",
+        coords: [28.9784, 41.0082],
+        endZoom: 15.2,
+        endPitch: 58,
+        endBearing: 16,
+        videoFile: "videos/istanbul.mp4",
+        country: "Turkey",
+        tagline: "Bosphorus Crossings & Historic Old City"
+    },
+    mumbai: {
+        name: "Mumbai",
+        coords: [72.8777, 19.0760],
+        endZoom: 15.3,
+        endPitch: 60,
+        endBearing: -14,
+        videoFile: "videos/mumbai.mp4",
+        country: "India",
+        tagline: "Colonial Grandeur & Coastal Roads"
+    },
+    lisbon: {
+        name: "Lisbon",
+        coords: [-9.1393, 38.7223],
+        endZoom: 15.3,
+        endPitch: 58,
+        endBearing: 24,
+        videoFile: "videos/lisbon.mp4",
+        country: "Portugal",
+        tagline: "Cobblestone Hills & Pastel Quarters"
     }
-  });
+};
 
-  // Hero: push the camera forward while the copy lifts, blurs and leaves.
-  timeline
-    .to(layers.hero, { scale: 1.34, yPercent: -1.2, duration: 3 }, 0)
-    .to(heroHint, { autoAlpha: 0, duration: 0.5, ease: 'power1.in' }, 0.55)
-    .to(
-      heroContent,
-      {
-        autoAlpha: 0,
-        y: -85,
-        filter: 'blur(10px)',
-        duration: 1.2,
-        ease: 'power2.in'
-      },
-      0.65
-    );
+// Verified official Mapbox public token
+const MAPBOX_DEFAULT_TOKEN = "pk.eyJ1IjoiZXhhbXBsZXMiLCJhIjoiY2xxeTBib3pyMGsxcTJpbXQ3bmo4YXU0ZiJ9.wvqlBMQSxTHgvAh6l9OXXw";
 
-  // Notice: the heading enters from the right, the card rises into the lower right.
-  timeline
-    .fromTo(
-      layers.notice,
-      { opacity: 0, scale: 1.06, yPercent: 1.2 },
-      { opacity: 1, scale: 1.14, yPercent: 0, duration: 1.15 },
-      1.1
-    )
-    .to(layers.notice, { scale: 1.24, yPercent: -0.8, duration: 1.5 }, 2.25)
-    .to(layers.notice, { scale: 1.38, yPercent: -1.6, duration: 1.4 }, 3.75)
-    .to(
-      noticeContent,
-      {
-        autoAlpha: 1,
-        x: 0,
-        y: 0,
-        filter: 'blur(0px)',
-        duration: 1.05,
-        ease: 'power3.out'
-      },
-      1.5
-    )
-    .to(
-      noticeCard,
-      {
-        autoAlpha: 1,
-        y: 0,
-        scale: 1,
-        filter: 'blur(0px)',
-        duration: 1,
-        ease: 'power3.out'
-      },
-      1.9
-    )
-    .to(noticeProgress, { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power2.out' }, 1.7)
-    .to(noticeBar, { autoAlpha: 1, y: 0, duration: 0.65, ease: 'power2.out' }, 2);
+function getActiveMapboxToken() {
+    return window.MAPBOX_ACCESS_TOKEN || localStorage.getItem("MAPBOX_ACCESS_TOKEN") || MAPBOX_DEFAULT_TOKEN;
+}
 
-  // Notice exit: heading drifts away left while the card sinks.
-  timeline
-    .to(
-      noticeContent,
-      {
-        autoAlpha: 0,
-        x: -80,
-        y: -10,
-        filter: 'blur(7px)',
-        duration: 0.8,
-        ease: 'power2.in'
-      },
-      3.3
-    )
-    .to(
-      noticeCard,
-      {
-        autoAlpha: 0,
-        y: 50,
-        filter: 'blur(7px)',
-        duration: 0.75,
-        ease: 'power2.in'
-      },
-      3.4
-    )
-    .to([noticeProgress, noticeBar], { autoAlpha: 0, duration: 0.6 }, 3.4);
+// Modal State Management
+let activeMap = null;
+let isModalOpen = false;
+let isTransitioningToVideo = false;
+let mapFlightTimeout = null;
+let autoplayCheckTimer = null;
+let wasAmbientPlaying = false;
+let currentCityData = null;
 
-  // Explore: the title drops in while two mode cards lift side by side.
-  timeline
-    .fromTo(
-      layers.explore,
-      { opacity: 0, scale: 1.06, yPercent: 1.2 },
-      { opacity: 1, scale: 1.14, yPercent: 0, duration: 1.05 },
-      3.62
-    )
-    .to(layers.explore, { scale: 1.25, yPercent: -0.9, duration: 1.4 }, 4.67)
-    .to(layers.explore, { scale: 1.4, yPercent: -1.7, duration: 1.3 }, 6.07)
-    .to(
-      exploreContent,
-      {
-        autoAlpha: 1,
-        y: 0,
-        filter: 'blur(0px)',
-        duration: 1,
-        ease: 'power3.out'
-      },
-      4.05
-    )
-    .to(
-      explorePanelHeader,
-      { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power2.out' },
-      4.35
-    )
-    .to(
-      exploreOptions,
-      {
-        autoAlpha: 1,
-        y: 0,
-        rotation: 0,
-        scale: 1,
-        duration: 0.9,
-        stagger: 0.16,
-        ease: 'power3.out'
-      },
-      4.5
-    )
-    .to(
-      exploreButton,
-      { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power2.out' },
-      4.95
-    )
-    .to(
-      exploreProgress,
-      { autoAlpha: 0.55, x: 0, duration: 0.7, ease: 'power2.out' },
-      4.3
-    )
-    .to(exploreBar, { autoAlpha: 1, y: 0, duration: 0.65, ease: 'power2.out' }, 4.6);
+const cityModal = document.getElementById("city-modal");
+const cityModalBackdrop = document.getElementById("city-modal-backdrop");
+const cityModalDialog = cityModal ? cityModal.querySelector(".city-modal-dialog") : null;
+const cityModalCloseBtn = document.getElementById("city-modal-close");
+const cityModalSkipBtn = document.getElementById("city-modal-skip-btn");
+const cityModalTitle = document.getElementById("city-modal-title");
+const cityModalCountry = document.getElementById("city-modal-country");
+const cityModalCoords = document.getElementById("city-modal-coords");
+const cityModalStatusText = document.getElementById("city-modal-status-text");
 
-  // Explore exit: the whole mode cluster slips down and fades.
-  timeline
-    .to(
-      exploreContent,
-      {
-        autoAlpha: 0,
-        y: -45,
-        filter: 'blur(7px)',
-        duration: 0.8,
-        ease: 'power2.in'
-      },
-      5.75
-    )
-    .to(
-      explorePanelHeader,
-      { autoAlpha: 0, y: -20, duration: 0.55, ease: 'power2.in' },
-      5.8
-    )
-    .to(
-      exploreOptions,
-      {
-        autoAlpha: 0,
-        y: 45,
-        scale: 0.96,
-        duration: 0.65,
-        stagger: 0.08,
-        ease: 'power2.in'
-      },
-      5.85
-    )
-    .to(
-      exploreButton,
-      { autoAlpha: 0, y: 25, duration: 0.55, ease: 'power2.in' },
-      5.9
-    )
-    .to([exploreProgress, exploreBar], { autoAlpha: 0, duration: 0.55 }, 5.9);
+const cityMapStage = document.getElementById("city-modal-map-stage");
+const cityMapContainer = document.getElementById("city-mapbox-container");
+const cityMapFallback = document.getElementById("city-map-fallback");
+const fallbackActionBtn = document.getElementById("fallback-action-btn");
+const hudAltitudeLabel = document.getElementById("hud-altitude-label");
+const hudTargetName = document.getElementById("hud-target-name");
+const hudCameraZoom = document.getElementById("hud-camera-zoom");
 
-  // Feel: copy rises into the lower left, the destination gallery lands, then scrolls through cities.
-  timeline
-    .fromTo(
-      layers.feel,
-      { opacity: 0, scale: 1.06, yPercent: 1.2 },
-      { opacity: 1, scale: 1.14, yPercent: 0, duration: 1.05 },
-      6.1
-    )
-    .to(layers.feel, { scale: 1.44, yPercent: -2, duration: 2.1, ease: 'power1.inOut' }, 7.15)
-    .to(
-      feelContent,
-      {
-        autoAlpha: 1,
-        y: 0,
-        filter: 'blur(0px)',
-        duration: 0.95,
-        ease: 'power3.out'
-      },
-      6.55
-    )
-    .to(
-      feelPath,
-      { autoAlpha: 1, scaleX: 1, duration: 1.1, ease: 'power2.out' },
-      6.7
-    )
-    .to(feelProgress, { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power2.out' }, 6.7)
-    .to(
-      feelGallery,
-      {
-        autoAlpha: 1,
-        y: 0,
-        scale: 1,
-        filter: 'blur(0px)',
-        duration: 1.1,
-        ease: 'back.out(1.2)'
-      },
-      6.9
-    )
-    .to(feelSlideImages, { scale: 1, duration: 1.4, ease: 'power2.out' }, 6.95)
-    .to(feelBar, { autoAlpha: 1, y: 0, duration: 0.65, ease: 'power2.out' }, 6.9)
+const cityVideoStage = document.getElementById("city-modal-video-stage");
+const cityVideoFrame = document.getElementById("city-video-frame");
+const cityVideo = document.getElementById("city-video");
+const cityVideoAudioBtn = document.getElementById("city-video-audio-btn");
+const cityVideoAudioLabel = document.getElementById("city-video-audio-label");
+const cityVideoPlayOverlay = document.getElementById("city-video-play-overlay");
+const cityVideoBigPlay = document.getElementById("city-video-big-play");
+const videoModeBadge = document.getElementById("video-mode-badge");
+const videoCityTag = document.getElementById("video-city-tag");
 
-  function updateActiveScene(progress) {
-    const time = progress * timeline.duration();
-    let index = 0;
+function getMapboxStyle() {
+    const customToken = window.MAPBOX_ACCESS_TOKEN || localStorage.getItem("MAPBOX_ACCESS_TOKEN");
+    if (customToken && customToken.startsWith("pk.") && customToken !== MAPBOX_DEFAULT_TOKEN) {
+        return "mapbox://styles/mapbox/dark-v11";
+    }
 
-    if (time >= cuts[2]) index = 3;
-    else if (time >= cuts[1]) index = 2;
-    else if (time >= cuts[0]) index = 1;
+    // Realistic Cinematic 3D Satellite & Extrusion Style
+    // Renders Earth from stratosphere down to street level with satellite imagery,
+    // glowing golden highway corridors, and extruded 3D illuminated buildings.
+    return {
+        version: 8,
+        name: "Cinematic 3D Satellite",
+        sources: {
+            "esri-satellite": {
+                type: "raster",
+                tiles: [
+                    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                ],
+                tileSize: 256,
+                maxzoom: 19
+            },
+            "openmaptiles": {
+                type: "vector",
+                url: "https://tiles.openfreemap.org/planet"
+            }
+        },
+        layers: [
+            {
+                id: "satellite-layer",
+                type: "raster",
+                source: "esri-satellite",
+                paint: {
+                    "raster-saturation": -0.05,
+                    "raster-contrast": 0.18,
+                    "raster-brightness-min": 0.05
+                }
+            },
+            {
+                id: "night-ambience",
+                type: "background",
+                paint: {
+                    "background-color": "#060913",
+                    "background-opacity": 0.22
+                }
+            },
+            {
+                id: "highways-glow",
+                type: "line",
+                source: "openmaptiles",
+                "source-layer": "transportation",
+                filter: ["in", "class", "motorway", "trunk", "primary"],
+                paint: {
+                    "line-color": "#f59e0b",
+                    "line-width": [
+                        "interpolate",
+                        ["linear"],
+                        ["zoom"],
+                        6, 1.0,
+                        11, 2.0,
+                        15, 3.8
+                    ],
+                    "line-opacity": 0.85
+                }
+            },
+            {
+                id: "add-3d-buildings",
+                source: "openmaptiles",
+                "source-layer": "building",
+                type: "fill-extrusion",
+                minzoom: 13,
+                paint: {
+                    "fill-extrusion-color": [
+                        "interpolate",
+                        ["linear"],
+                        ["get", "render_height"],
+                        0, "#1c2538",     // architectural steel base
+                        25, "#2b3952",    // illuminated facade
+                        60, "#485b7e",    // architectural glass
+                        120, "#c59a48",   // warm bronze
+                        220, "#dfbd82",   // luminous gold
+                        340, "#ffe59e"    // penthouse gold beacon
+                    ],
+                    "fill-extrusion-height": [
+                        "interpolate",
+                        ["linear"],
+                        ["zoom"],
+                        13, 0,
+                        14.05, ["get", "render_height"]
+                    ],
+                    "fill-extrusion-base": [
+                        "interpolate",
+                        ["linear"],
+                        ["zoom"],
+                        13, 0,
+                        14.05, ["get", "render_min_height"]
+                    ],
+                    "fill-extrusion-opacity": 0.95
+                }
+            }
+        ]
+    };
+}
 
-    if (index === activeIndex) return;
+function showMapError(title, desc) {
+    if (cityMapFallback) {
+        cityMapFallback.style.display = "flex";
+        const titleEl = document.getElementById("fallback-title");
+        const descEl = document.getElementById("fallback-desc");
+        if (titleEl) titleEl.textContent = title;
+        if (descEl) descEl.textContent = desc;
+    }
+    updateModalStatus("SATELLITE OFFLINE");
+}
 
-    activeIndex = index;
-    scenes.forEach((scene, sceneIndex) => {
-      scene.classList.toggle('is-current', sceneIndex === index);
+function updateModalStatus(text) {
+    if (cityModalStatusText) {
+        cityModalStatusText.textContent = text;
+    }
+}
+
+function openCityModal(cityKey) {
+    const city = cityData[cityKey];
+    if (!city || isModalOpen) return;
+
+    isModalOpen = true;
+    isTransitioningToVideo = false;
+    currentCityData = city;
+
+    // Pause ambient background audio if playing
+    const ambientAudio = document.getElementById("ambient-audio");
+    if (ambientAudio) {
+        wasAmbientPlaying = !ambientAudio.paused;
+        if (wasAmbientPlaying) {
+            ambientAudio.pause();
+        }
+    }
+
+    // Populate header info
+    if (cityModalTitle) cityModalTitle.textContent = city.name;
+    if (cityModalCountry) cityModalCountry.textContent = city.country || "";
+    if (cityModalCoords) {
+        const [lng, lat] = city.coords;
+        const latStr = `${Math.abs(lat).toFixed(4)}° ${lat >= 0 ? "N" : "S"}`;
+        const lngStr = `${Math.abs(lng).toFixed(4)}° ${lng >= 0 ? "E" : "W"}`;
+        cityModalCoords.textContent = `${latStr}, ${lngStr}`;
+    }
+    if (hudTargetName) hudTargetName.textContent = `TARGET: ${city.name.toUpperCase()}`;
+    if (hudCameraZoom) hudCameraZoom.textContent = "ZOOM: 2.0";
+    if (hudAltitudeLabel) hudAltitudeLabel.textContent = "STRATOSPHERE (50 KM)";
+
+    updateModalStatus("LOCATING SATELLITE...");
+
+    // Reset stages
+    if (cityMapStage) {
+        cityMapStage.style.display = "block";
+        cityMapStage.style.opacity = "1";
+    }
+    if (cityVideoStage) {
+        cityVideoStage.style.display = "none";
+        cityVideoStage.style.opacity = "0";
+    }
+    if (cityMapFallback) cityMapFallback.style.display = "none";
+    if (cityVideoPlayOverlay) cityVideoPlayOverlay.style.display = "none";
+    if (cityModalSkipBtn) cityModalSkipBtn.style.display = "inline-flex";
+
+    // Show modal container
+    cityModal.classList.add("is-active");
+    cityModal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("city-modal-open");
+
+    // GSAP Open Animation (fade + slight scale in)
+    if (typeof gsap !== "undefined") {
+        gsap.killTweensOf([cityModalBackdrop, cityModalDialog]);
+        gsap.fromTo(cityModalBackdrop, 
+            { opacity: 0 }, 
+            { opacity: 1, duration: 0.35, ease: "power2.out" }
+        );
+        gsap.fromTo(cityModalDialog, 
+            { opacity: 0, scale: 0.94, y: 15 }, 
+            { 
+                opacity: 1, 
+                scale: 1, 
+                y: 0, 
+                duration: 0.45, 
+                ease: "power3.out",
+                onComplete: () => {
+                    initCityMap(city);
+                }
+            }
+        );
+    } else {
+        cityModalBackdrop.style.opacity = "1";
+        cityModalDialog.style.opacity = "1";
+        cityModalDialog.style.transform = "scale(1)";
+        initCityMap(city);
+    }
+}
+
+function initCityMap(city) {
+    if (!cityModal || !cityModal.classList.contains("is-active")) return;
+
+    const token = getActiveMapboxToken();
+
+    // Check Mapbox GL availability & WebGL support
+    const isMapboxAvailable = typeof mapboxgl !== "undefined" && (typeof mapboxgl.supported === "function" ? mapboxgl.supported() : true);
+
+    if (!isMapboxAvailable) {
+        showMapError("WebGL Unsupported", "Hardware acceleration / WebGL is required for 3D satellite visualization.");
+        return;
+    }
+
+    if (!token || !token.startsWith("pk.")) {
+        showMapError("Mapbox Access Token Missing", "Please provide a valid Mapbox Public Access Token (starts with 'pk.') to initialize 3D cities.");
+        return;
+    }
+
+    try {
+        mapboxgl.accessToken = token;
+        const style = getMapboxStyle();
+
+        // 1. Camera starts VERY high (stratosphere / ~50 km altitude) looking straight down (pitch 0)
+        const startZoom = 2.0;
+        const targetZoom = city.endZoom || 15.4;
+        const targetPitch = city.endPitch || 62;
+        const targetBearing = city.endBearing || -25;
+
+        if (cityMapContainer) {
+            cityMapContainer.innerHTML = "";
+        }
+
+        const map = new mapboxgl.Map({
+            container: "city-mapbox-container",
+            style: style,
+            center: city.coords,
+            zoom: startZoom,
+            pitch: 0,
+            bearing: 0,
+            preserveDrawingBuffer: true,
+            attributionControl: false,
+            antialias: true
+        });
+
+        activeMap = map;
+
+        let hasFlightStarted = false;
+        let isFlightCompleted = false;
+
+        const onMapReady = () => {
+            if (!activeMap) return;
+
+            // 1. Vibrant Atmospheric Space Fog & Horizon Glow
+            if (typeof map.setFog === "function") {
+                map.setFog({
+                    range: [0.5, 10],
+                    color: "#121d30",
+                    "horizon-blend": 0.3,
+                    "high-color": "#091425",
+                    "space-color": "#01040b",
+                    "star-intensity": 0.9
+                });
+            }
+
+            // 2. Beautiful Palette: Luminous Sapphire Water, Emerald Parks, Glowing Golden Arteries
+            try {
+                if (map.getLayer("background")) {
+                    map.setPaintProperty("background", "background-color", "#0c111d");
+                }
+                if (map.getLayer("water")) {
+                    map.setPaintProperty("water", "fill-color", "#0f3254");
+                    map.setPaintProperty("water", "fill-opacity", 0.95);
+                }
+                if (map.getLayer("waterway")) {
+                    map.setPaintProperty("waterway", "line-color", "#1a4f7e");
+                    map.setPaintProperty("waterway", "line-width", 2);
+                }
+                if (map.getLayer("landuse_park")) {
+                    map.setPaintProperty("landuse_park", "fill-color", "#0f2e21");
+                    map.setPaintProperty("landuse_park", "fill-opacity", 0.85);
+                }
+                if (map.getLayer("landcover_wood")) {
+                    map.setPaintProperty("landcover_wood", "fill-color", "#0c2419");
+                    map.setPaintProperty("landcover_wood", "fill-opacity", 0.8);
+                }
+                if (map.getLayer("highway_motorway_inner")) {
+                    map.setPaintProperty("highway_motorway_inner", "line-color", "#dfbd82");
+                    map.setPaintProperty("highway_motorway_inner", "line-width", 2.4);
+                }
+                if (map.getLayer("highway_major_inner")) {
+                    map.setPaintProperty("highway_major_inner", "line-color", "#f59e0b");
+                    map.setPaintProperty("highway_major_inner", "line-width", 1.8);
+                }
+                if (map.getLayer("highway_minor")) {
+                    map.setPaintProperty("highway_minor", "line-color", "#28394e");
+                }
+            } catch (err) {}
+
+            // 3. Insert 3D Extruded Buildings Layer with Warm Gold and Architectural Facades
+            const currentStyle = map.getStyle();
+            if (currentStyle && currentStyle.layers) {
+                let labelLayerId;
+                for (let i = 0; i < currentStyle.layers.length; i++) {
+                    if (currentStyle.layers[i].type === "symbol" && currentStyle.layers[i].layout && currentStyle.layers[i].layout["text-field"]) {
+                        labelLayerId = currentStyle.layers[i].id;
+                        break;
+                    }
+                }
+
+                const isMapboxComposite = !!(currentStyle.sources && currentStyle.sources["composite"]);
+                const buildingSource = isMapboxComposite ? "composite" : "openmaptiles";
+                const heightProp = isMapboxComposite ? "height" : "render_height";
+                const minHeightProp = isMapboxComposite ? "min_height" : "render_min_height";
+                const filterExpr = isMapboxComposite ? ["==", "extrude", "true"] : ["has", "render_height"];
+
+                if (!map.getLayer("add-3d-buildings")) {
+                    map.addLayer(
+                        {
+                            id: "add-3d-buildings",
+                            source: buildingSource,
+                            "source-layer": "building",
+                            filter: filterExpr,
+                            type: "fill-extrusion",
+                            minzoom: 13,
+                            paint: {
+                                "fill-extrusion-color": [
+                                    "interpolate",
+                                    ["linear"],
+                                    ["get", heightProp],
+                                    0, "#1c2538",     // architectural steel base
+                                    25, "#2b3952",    // illuminated facade
+                                    60, "#485b7e",    // architectural glass
+                                    120, "#c59a48",   // warm bronze
+                                    220, "#dfbd82",   // luminous gold
+                                    340, "#ffe59e"    // penthouse gold beacon
+                                ],
+                                "fill-extrusion-height": [
+                                    "interpolate",
+                                    ["linear"],
+                                    ["zoom"],
+                                    13, 0,
+                                    14.05, ["get", heightProp]
+                                ],
+                                "fill-extrusion-base": [
+                                    "interpolate",
+                                    ["linear"],
+                                    ["zoom"],
+                                    13, 0,
+                                    14.05, ["get", minHeightProp]
+                                ],
+                                "fill-extrusion-opacity": 0.95
+                            }
+                        },
+                        labelLayerId
+                    );
+                }
+            }
+
+            startCinematicFlight();
+        };
+
+        const startCinematicFlight = () => {
+            if (hasFlightStarted || !activeMap) return;
+            hasFlightStarted = true;
+
+            map.resize();
+            updateModalStatus("DESCENDING TO CITY…");
+            if (hudAltitudeLabel) hudAltitudeLabel.textContent = "STRATOSPHERE (50 KM)";
+
+            // 2. Camera smoothly flies down while tilting into 3D perspective (~60° pitch)
+            // Duration ~5.2 seconds (cinematic ~4-6s)
+            map.flyTo({
+                center: city.coords,
+                zoom: targetZoom,
+                pitch: targetPitch,
+                bearing: targetBearing,
+                duration: 5200,
+                speed: 0.85,
+                curve: 1.4,
+                essential: true,
+                easing: (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
+            });
+        };
+
+        if (map.isStyleLoaded()) {
+            onMapReady();
+        } else {
+            map.once("style.load", onMapReady);
+        }
+
+        // Live telemetry updater during flight (continuously updates altitude text)
+        const updateTelemetry = () => {
+            if (!activeMap) return;
+            const z = map.getZoom();
+            if (hudCameraZoom) hudCameraZoom.textContent = `ZOOM: ${z.toFixed(1)}`;
+
+            // Exponential altitude mapping from 50 km down to city level (250 m)
+            const progress = Math.min(1, Math.max(0, (z - 2.0) / (targetZoom - 2.0)));
+            const altKm = 50 * Math.pow(0.005, progress);
+
+            let altText = "";
+            let phase = "STRATOSPHERE";
+            if (progress >= 0.92) {
+                phase = "CITY LEVEL";
+                altText = `${Math.round(altKm * 1000)} M`;
+            } else if (progress >= 0.65) {
+                phase = "APPROACH";
+                altText = `${altKm.toFixed(1)} KM`;
+            } else if (progress >= 0.3) {
+                phase = "DESCENT";
+                altText = `${altKm.toFixed(1)} KM`;
+            } else {
+                phase = "STRATOSPHERE";
+                altText = `${altKm.toFixed(1)} KM`;
+            }
+
+            if (hudAltitudeLabel && !isFlightCompleted) {
+                hudAltitudeLabel.textContent = `${phase} (${altText})`;
+            }
+        };
+
+        map.on("move", updateTelemetry);
+        map.on("render", updateTelemetry);
+
+        // When 3D camera flight finishes
+        map.once("moveend", () => {
+            if (!hasFlightStarted) return;
+            isFlightCompleted = true;
+
+            updateModalStatus("3D SKYLINE ACTIVE • ENTERING STREET LEVEL");
+            if (hudAltitudeLabel) hudAltitudeLabel.textContent = "CITY LEVEL (GROUND)";
+
+            // Hold on the 3D skyline before transitioning to street video
+            setTimeout(() => {
+                if (!isTransitioningToVideo && isModalOpen) {
+                    transitionToVideo(city);
+                }
+            }, 3200);
+        });
+
+        map.on("error", (e) => {
+            console.warn("Mapbox error:", e);
+            if (e && e.error && (e.error.status === 401 || e.error.status === 403)) {
+                showMapError("Mapbox Authorization Failed", "The provided Mapbox Access Token is invalid or unauthorized.");
+            }
+        });
+
+        // Safety fallback timer if moveend takes too long
+        mapFlightTimeout = setTimeout(() => {
+            if (!isTransitioningToVideo) {
+                transitionToVideo(city);
+            }
+        }, 9500);
+
+    } catch (err) {
+        console.error("Map initialization failed:", err);
+        showMapError("Mapbox Initialization Error", err.message || "Failed to load 3D map engine.");
+    }
+}
+
+function transitionToVideo(city) {
+    if (isTransitioningToVideo) return;
+    isTransitioningToVideo = true;
+
+    if (mapFlightTimeout) {
+        clearTimeout(mapFlightTimeout);
+        mapFlightTimeout = null;
+    }
+
+    if (cityModalSkipBtn) {
+        cityModalSkipBtn.style.display = "none";
+    }
+
+    updateModalStatus("STREET IMMERSION ACTIVE");
+
+    // GSAP smooth transition from map to video
+    if (typeof gsap !== "undefined") {
+        const tl = gsap.timeline();
+        tl.to(cityMapStage, {
+            opacity: 0,
+            duration: 0.7,
+            ease: "power2.inOut",
+            onComplete: () => {
+                if (cityMapStage) cityMapStage.style.display = "none";
+            }
+        });
+
+        tl.fromTo(cityVideoStage, 
+            { opacity: 0, scale: 1.03 }, 
+            {
+                opacity: 1,
+                scale: 1,
+                duration: 0.7,
+                ease: "power2.out",
+                onStart: () => {
+                    if (cityVideoStage) cityVideoStage.style.display = "block";
+                    startCityVideo(city);
+                }
+            },
+            "-=0.25"
+        );
+    } else {
+        if (cityMapStage) cityMapStage.style.display = "none";
+        if (cityVideoStage) {
+            cityVideoStage.style.display = "block";
+            cityVideoStage.style.opacity = "1";
+        }
+        startCityVideo(city);
+    }
+}
+
+function startCityVideo(city) {
+    if (!cityVideo) return;
+
+    // Update Mode & City tags in HUD
+    const isWalking = (typeof s2SelectedMode !== "undefined" && s2SelectedMode === "walking");
+    if (videoModeBadge) {
+        videoModeBadge.textContent = isWalking ? "WALKING TOUR" : "DRIVING TOUR";
+    }
+    if (videoCityTag) {
+        videoCityTag.textContent = `${city.name}, ${city.country || ""}`;
+    }
+
+    // Determine local MP4 file path
+    const videoSrc = city.videoFile || `videos/${(city.name || "").toLowerCase().replace(/\s+/g, "")}.mp4`;
+
+    // Only set src if not already loaded
+    if (cityVideo.getAttribute("src") !== videoSrc) {
+        cityVideo.src = videoSrc;
+        cityVideo.load();
+    }
+
+    // Default to muted so browser allows seamless immediate autoplay
+    cityVideo.muted = true;
+    updateAudioButtonUI(false);
+
+    const playPromise = cityVideo.play();
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            hidePlayOverlay();
+        }).catch((err) => {
+            console.warn("Autoplay blocked by browser policy, showing play overlay:", err);
+            showPlayOverlay();
+        });
+    }
+}
+
+function toggleCityVideoAudio() {
+    if (!cityVideo) return;
+    cityVideo.muted = !cityVideo.muted;
+    updateAudioButtonUI(!cityVideo.muted);
+}
+
+function updateAudioButtonUI(isUnmuted) {
+    if (!cityVideoAudioBtn) return;
+    const mutedIcon = cityVideoAudioBtn.querySelector(".audio-muted-icon");
+    const unmutedIcon = cityVideoAudioBtn.querySelector(".audio-unmuted-icon");
+
+    cityVideoAudioBtn.classList.toggle("is-unmuted", isUnmuted);
+    if (mutedIcon) mutedIcon.style.display = isUnmuted ? "none" : "block";
+    if (unmutedIcon) unmutedIcon.style.display = isUnmuted ? "block" : "none";
+    if (cityVideoAudioLabel) {
+        cityVideoAudioLabel.textContent = isUnmuted ? "MUTE AUDIO" : "UNMUTE AUDIO";
+    }
+}
+
+if (cityVideoAudioBtn) {
+    cityVideoAudioBtn.addEventListener("click", toggleCityVideoAudio);
+}
+
+if (cityVideoBigPlay) {
+    cityVideoBigPlay.addEventListener("click", () => {
+        if (cityVideo) {
+            cityVideo.play().then(() => {
+                hidePlayOverlay();
+            }).catch(() => {});
+        }
     });
-  }
+}
 
-  updateActiveScene(0);
+function showPlayOverlay() {
+    if (cityVideoPlayOverlay) {
+        cityVideoPlayOverlay.style.display = "flex";
+        if (typeof gsap !== "undefined") {
+            gsap.fromTo(cityVideoPlayOverlay, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+        }
+    }
+}
 
-  function scrollToTimelineTime(time) {
-    const trigger = timeline.scrollTrigger;
-    if (!trigger) return;
+function hidePlayOverlay() {
+    if (cityVideoPlayOverlay) {
+        cityVideoPlayOverlay.style.display = "none";
+    }
+}
 
-    const ratio = Math.min(1, Math.max(0, time / timeline.duration()));
-    const target = trigger.start + (trigger.end - trigger.start) * ratio;
-    window.scrollTo({ top: target, behavior: 'smooth' });
-  }
+function closeCityModal() {
+    if (!isModalOpen) return;
+    isModalOpen = false;
 
-  const heroCta = heroScene.querySelector('.cta-btn');
-  if (heroCta) {
-    heroCta.addEventListener('click', (event) => {
-      event.preventDefault();
-      scrollToTimelineTime(2.4);
+    if (mapFlightTimeout) {
+        clearTimeout(mapFlightTimeout);
+        mapFlightTimeout = null;
+    }
+    if (autoplayCheckTimer) {
+        clearTimeout(autoplayCheckTimer);
+        autoplayCheckTimer = null;
+    }
+
+    // 1. Pause and reset local video completely (halt sound & free decoding memory)
+    if (cityVideo) {
+        cityVideo.pause();
+        cityVideo.removeAttribute("src");
+        cityVideo.load();
+    }
+    hidePlayOverlay();
+
+    // 2. Destroy Mapbox instance cleanly
+    if (activeMap) {
+        try {
+            activeMap.remove();
+        } catch (e) {}
+        activeMap = null;
+    }
+    if (cityMapContainer) {
+        cityMapContainer.innerHTML = "";
+    }
+
+    // 3. GSAP Close Animation
+    if (typeof gsap !== "undefined") {
+        gsap.killTweensOf([cityModalDialog, cityModalBackdrop]);
+        gsap.to(cityModalDialog, {
+            opacity: 0,
+            scale: 0.94,
+            y: 12,
+            duration: 0.3,
+            ease: "power2.in"
+        });
+        gsap.to(cityModalBackdrop, {
+            opacity: 0,
+            duration: 0.3,
+            ease: "power2.in",
+            onComplete: () => {
+                cityModal.classList.remove("is-active");
+                cityModal.setAttribute("aria-hidden", "true");
+                document.body.classList.remove("city-modal-open");
+
+                // Reset stage states
+                if (cityMapStage) {
+                    cityMapStage.style.display = "block";
+                    cityMapStage.style.opacity = "1";
+                }
+                if (cityVideoStage) {
+                    cityVideoStage.style.display = "none";
+                    cityVideoStage.style.opacity = "0";
+                }
+                hidePlayOverlay();
+            }
+        });
+    } else {
+        cityModal.classList.remove("is-active");
+        cityModal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("city-modal-open");
+        if (cityMapStage) {
+            cityMapStage.style.display = "block";
+            cityMapStage.style.opacity = "1";
+        }
+        if (cityVideoStage) {
+            cityVideoStage.style.display = "none";
+            cityVideoStage.style.opacity = "0";
+        }
+        hidePlayOverlay();
+    }
+
+    // Resume ambient background audio if it was active before opening
+    const ambientAudio = document.getElementById("ambient-audio");
+    if (ambientAudio && wasAmbientPlaying) {
+        ambientAudio.play().catch(() => {});
+        wasAmbientPlaying = false;
+    }
+}
+
+// Attach Event Listeners
+if (cityModalCloseBtn) {
+    cityModalCloseBtn.addEventListener("click", closeCityModal);
+}
+
+if (cityModalBackdrop) {
+    cityModalBackdrop.addEventListener("click", closeCityModal);
+}
+
+if (cityModalSkipBtn) {
+    cityModalSkipBtn.addEventListener("click", () => {
+        if (currentCityData) {
+            transitionToVideo(currentCityData);
+        }
     });
-  }
+}
 
-  const modeButton = exploreScene.querySelector('.mode-btn');
-  if (modeButton) {
-    modeButton.addEventListener('click', () => {
-      scrollToTimelineTime(7.45);
+if (fallbackActionBtn) {
+    fallbackActionBtn.addEventListener("click", () => {
+        if (currentCityData) {
+            transitionToVideo(currentCityData);
+        }
     });
-  }
+}
 
-  window.addEventListener('load', () => ScrollTrigger.refresh());
-})();
-
-(function () {
-  const liveTimes = document.querySelectorAll('.live-time');
-  if (!liveTimes.length) return;
-
-  const formatter = new Intl.DateTimeFormat('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23'
-  });
-
-  function updateClock() {
-    const now = new Date();
-    const value = formatter.format(now);
-
-    liveTimes.forEach((node) => {
-      node.textContent = value;
-      node.setAttribute('datetime', now.toISOString());
+const fallbackSaveBtn = document.getElementById("fallback-save-btn");
+const mapboxTokenInput = document.getElementById("mapbox-token-input");
+if (fallbackSaveBtn && mapboxTokenInput) {
+    fallbackSaveBtn.addEventListener("click", () => {
+        const val = mapboxTokenInput.value.trim();
+        if (val.startsWith("pk.")) {
+            localStorage.setItem("MAPBOX_ACCESS_TOKEN", val);
+            window.MAPBOX_ACCESS_TOKEN = val;
+            if (cityMapFallback) cityMapFallback.style.display = "none";
+            if (currentCityData) {
+                initCityMap(currentCityData);
+            }
+        } else {
+            alert("Please enter a valid Mapbox public token starting with 'pk.'");
+        }
     });
-  }
+}
 
-  function scheduleNextMinute() {
-    const now = new Date();
-    const delay = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
-    window.setTimeout(() => {
-      updateClock();
-      scheduleNextMinute();
-    }, Math.max(1000, delay));
-  }
+if (cityVideoBigPlay) {
+    cityVideoBigPlay.addEventListener("click", () => {
+        hidePlayOverlay();
+        if (activeYtPlayer && typeof activeYtPlayer.playVideo === "function") {
+            try { activeYtPlayer.playVideo(); } catch (e) {}
+        }
+        sendIframeCommand("playVideo");
+    });
+}
 
-  updateClock();
-  scheduleNextMinute();
-})();
+window.addEventListener("message", (e) => {
+    try {
+        const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
+        if (data && data.event === "onStateChange" && data.info === 1) {
+            hidePlayOverlay();
+        }
+    } catch (err) {}
+});
 
-(function () {
-  document.querySelectorAll('img[data-fallback]').forEach((image) => {
-    const useFallback = () => {
-      if (image.dataset.fallbackUsed === 'true') return;
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && isModalOpen) {
+        closeCityModal();
+    }
+});
 
-      image.dataset.fallbackUsed = 'true';
-      image.src = image.dataset.fallback;
+// City Cards Click Handling
+const s3CityCards = document.querySelectorAll(".s3-city-card");
+
+s3CityCards.forEach((card) => {
+    card.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        s3CityCards.forEach((item) => {
+            item.classList.remove("s3-city-selected");
+            item.setAttribute("aria-pressed", "false");
+        });
+
+        card.classList.add("s3-city-selected");
+        card.setAttribute("aria-pressed", "true");
+
+        // Read selected city key from data-city
+        const rawCity = card.getAttribute("data-city") || "";
+        const cityKey = rawCity.toLowerCase().replace(/\s+/g, "");
+
+        openCityModal(cityKey);
+    });
+});
+
+// Auto-open city modal if requested via URL param (e.g. ?openCity=paris)
+const searchParams = new URLSearchParams(window.location.search);
+const queryCity = searchParams.get("openCity");
+if (queryCity && cityData[queryCity.toLowerCase()]) {
+    const triggerAutoOpen = () => {
+        setTimeout(() => {
+            openCityModal(queryCity.toLowerCase());
+        }, 100);
     };
 
-    image.addEventListener('error', useFallback);
-    if (image.complete && image.naturalWidth === 0) useFallback();
-  });
-})();
-
-(function () {
-  const modeOptions = document.querySelectorAll('.mode-option');
-
-  modeOptions.forEach((option) => {
-    option.addEventListener('click', () => {
-      modeOptions.forEach((item) => {
-        item.classList.remove('active');
-        item.setAttribute('aria-pressed', 'false');
-      });
-
-      option.classList.add('active');
-      option.setAttribute('aria-pressed', 'true');
-    });
-  });
-
-  const destinationButton = document.querySelector('.destination-btn');
-  if (destinationButton) {
-    destinationButton.dataset.nextPage = destinationButton.dataset.nextPage || 'city-selection';
-  }
-})();
-
-// ==================== OPEN CITY SELECTION ====================
-(function () {
-  const btn = document.querySelector('.destination-btn');
-  const citySection = document.getElementById('city-selection');
-  if (!btn || !citySection) return;
-
-  btn.addEventListener('click', (e) => {
-    e.preventDefault();
-    citySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-})();
-
-(function(){
-  const track = document.querySelector('.destination-track');
-  const dots = document.querySelectorAll('.destination-dot');
-  const currentLabel = document.querySelector('.destination-current');
-  if(!track) return;
-
-  const total = track.querySelectorAll('.destination-slide').length;
-  if(!total) return;
-
-  let index = 0;
-  let timer;
-
-  function goTo(i){
-    index = (i+total)%total;
-    track.style.transition = 'transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)';
-    track.style.transform = `translateX(-${index * (100 / total)}%)`;
-
-    dots.forEach((dot, d) => dot.classList.toggle('is-active', d===index));
-    if(currentLabel){
-      currentLabel.textContent = String(index+1).padStart(2, '0');
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        triggerAutoOpen();
+    } else {
+        window.addEventListener("DOMContentLoaded", triggerAutoOpen);
+        window.addEventListener("load", triggerAutoOpen);
     }
-  }
+}
 
-  function start(){
-    clearInterval(timer);
-    timer= setInterval(()=> goTo(index+1), 2800);
-  }
-  const gallery = document.querySelector('.destination-gallery');
-  if(gallery){
-    gallery.addEventListener('mouseenter', ()=> clearInterval(timer));
-    gallery.addEventListener('mouseleave', start);
-  }
+function updateLocalClock() {
+    const clocks = document.querySelectorAll("#s2-local-clock, #s3-local-clock, #local-clock");
+    if (!clocks.length) return;
 
-  goTo(0);
-  start();
-})();
+    const time = new Intl.DateTimeFormat("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+    }).format(new Date());
+
+    clocks.forEach((clock) => {
+        clock.textContent = time;
+    });
+}
+
+updateLocalClock();
+setInterval(updateLocalClock, 60000);
+
+function setupSoundControls() {
+    const controls = document.querySelectorAll(".s2-sound-control");
+    const ambientAudio = document.getElementById("ambient-audio");
+    if (!controls.length) return;
+
+    if (ambientAudio) {
+        ambientAudio.volume = 0.25;
+    }
+
+    const setSoundState = (isActive) => {
+        controls.forEach((control) => {
+            control.classList.toggle("s2-sound-active", isActive);
+            control.setAttribute("aria-pressed", String(isActive));
+
+            const label = control.querySelector(".s2-sound-label");
+            if (label) {
+                label.textContent = isActive ? "AMBIENT SOUND ON" : "AMBIENT SOUND OFF";
+            }
+        });
+
+        if (ambientAudio) {
+            if (isActive) {
+                const playPromise = ambientAudio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                    });
+                }
+            } else {
+                ambientAudio.pause();
+            }
+        }
+    };
+
+    controls.forEach((control) => {
+        control.addEventListener("click", () => {
+            const currentlyActive = control.classList.contains("s2-sound-active");
+            setSoundState(!currentlyActive);
+        });
+    });
+}
+
+setupSoundControls();
