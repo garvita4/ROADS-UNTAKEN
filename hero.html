@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ROADS UNTAKEN</title>
+  <title>Roads Untaken — A Journey Through the Details</title>
   <link rel="icon" href="logo.png" type="image/png">
   <link rel="apple-touch-icon" href="logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,6 +20,7 @@
   <div class="opening">
     <section class="hero">
       <div class="hero-bg"></div>
+      <div class="hero-spotlight" aria-hidden="true"></div>
       <header class="s2-header hero-header">
         <a href="#" class="s2-logo">
           <img src="logo.png" alt="Roads Untaken" class="logo-img">
@@ -35,18 +36,21 @@
           </a>
         </nav>
       </header>
-      <div class="hero-title">
+      <div class="hero-content">
         <h1>
           <span>ROADS</span>
           <span>UNTAKEN</span>
         </h1>
-        <div class="hero-right">
-          <p class="tagline">Step into real vibing world through your screen</p>
-          <a href="#scroll-one" class="explore-link" id="explore-btn">
-            Explore the world →
-          </a>
-        </div>
+        <p class="tagline">Step into real streets through your screen</p>
+        <a href="#scroll-one" class="explore-link" id="explore-btn">
+          Enter the world →
+        </a>
       </div>
+      <a href="#scroll-one" class="hero-scroll-cue" id="hero-scroll-cue" aria-label="Scroll to explore">
+        <span class="hero-scroll-line" aria-hidden="true"></span>
+        <span>SCROLL</span>
+        <span class="hero-scroll-arrow" aria-hidden="true">↓</span>
+      </a>
     </section>
 
     <section class="scroll-one" id="scroll-one">
@@ -85,7 +89,7 @@
               <span class="step-label">EXPLORE</span>
             </span>
           </a>
-          <a href="#cities" class="story-step" data-step="explore">
+          <a href="#cities" class="story-step" data-step="feel">
             <span class="step-dot"></span>
             <span class="step-copy">
               <span class="step-number">03</span>
@@ -107,14 +111,12 @@
             <span>A DETAIL WORTH FINDING</span>
           </div>
           <div class="detail-image"></div>
-          <p class="detail-text">Some signs aren't meant to be seen by everyone.</p>
-          <p class="detail-text">This one waits for the curious.</p>
-          <button class="reveal-button" id="reveal-detail">
+          <p class="detail-text">A single lamp burns above a doorway most evenings.</p>
+          <p class="detail-text">Look up. It has been on all night.</p>
+          <a href="#next-section" class="reveal-button" id="reveal-detail">
+            <span class="reveal-label">CONTINUE THE JOURNEY</span>
             <span class="reveal-arrow">→</span>
-          </button>
-          <div class="reveal-message" id="reveal-message" aria-live="polite">
-            Look closer. Every street has a secret waiting to be discovered.
-          </div>
+          </a>
         </aside>
       </div>
 
@@ -183,8 +185,8 @@
           <div class="s2-gold-line"></div>
 
           <p>
-            Drive through the city or<br>
-            walk its quiet corners.
+            Drive the long avenues or<br>
+            walk the quiet corners.
           </p>
 
         </div>
@@ -205,8 +207,8 @@
                 <h4>DRIVING</h4>
 
                 <p>
-                  Flow with the streets.<br>
-                  Discover at your pace.
+                  Cover more ground.<br>
+                  Follow the city's rhythm.
                 </p>
               </div>
 
@@ -220,8 +222,8 @@
                 <h4>WALKING</h4>
 
                 <p>
-                  Savor the details.<br>
-                  Make the city yours.
+                  Take the quiet corners.<br>
+                  Notice what others miss.
                 </p>
               </div>
 
@@ -230,7 +232,7 @@
           </div>
 
           <button type="button" class="s2-start-button">
-            <span class="s2-button-label">TRY THE FEELING</span>
+            <span class="s2-button-label">WALK THE CITY</span>
             <span class="s2-button-arrow">→</span>
           </button>
 
@@ -295,7 +297,7 @@
 
         <div class="s3-city-grid">
 
-          <button type="button" class="s3-city-card" data-city="Tokyo" aria-pressed="false">
+          <button type="button" class="s3-city-card" data-city="Tokyo" aria-pressed="false" data-cursor="Tokyo">
             <span class="s3-city-image s3-image-tokyo"></span>
             <span class="s3-city-copy">
               <span class="s3-city-name">Tokyo</span>
@@ -306,7 +308,7 @@
             </span>
           </button>
 
-          <button type="button" class="s3-city-card" data-city="Paris" aria-pressed="false">
+          <button type="button" class="s3-city-card" data-city="Paris" aria-pressed="false" data-cursor="Paris">
             <span class="s3-city-image s3-image-paris"></span>
             <span class="s3-city-copy">
               <span class="s3-city-name">Paris</span>
@@ -317,7 +319,7 @@
             </span>
           </button>
 
-          <button type="button" class="s3-city-card" data-city="New York" aria-pressed="false">
+          <button type="button" class="s3-city-card" data-city="New York" aria-pressed="false" data-cursor="New York">
             <span class="s3-city-image s3-image-newyork"></span>
             <span class="s3-city-copy">
               <span class="s3-city-name">New York</span>
@@ -328,7 +330,7 @@
             </span>
           </button>
 
-          <button type="button" class="s3-city-card" data-city="Istanbul" aria-pressed="false">
+          <button type="button" class="s3-city-card" data-city="Istanbul" aria-pressed="false" data-cursor="Istanbul">
             <span class="s3-city-image s3-image-istanbul"></span>
             <span class="s3-city-copy">
               <span class="s3-city-name">Istanbul</span>
@@ -339,7 +341,7 @@
             </span>
           </button>
 
-          <button type="button" class="s3-city-card" data-city="Mumbai" aria-pressed="false">
+          <button type="button" class="s3-city-card" data-city="Mumbai" aria-pressed="false" data-cursor="Mumbai">
             <span class="s3-city-image s3-image-mumbai"></span>
             <span class="s3-city-copy">
               <span class="s3-city-name">Mumbai</span>
@@ -367,7 +369,7 @@
 
         </div>
 
-        <div class="s3-tagline"></div>
+        <div class="s3-tagline">A JOURNEY THROUGH THE DETAILS</div>
 
         <div class="s3-footer-right">
 
@@ -435,7 +437,7 @@
   <!-- Reusable City Map & Street Experience Modal -->
   <div id="city-modal" class="city-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="City Explorer">
     <div class="city-modal-backdrop" id="city-modal-backdrop"></div>
-    <div class="city-modal-dialog">
+    <div class="city-modal-dialog" tabindex="-1">
       <!-- Modal Header -->
       <header class="city-modal-header">
         <div class="city-modal-header-left">
@@ -449,7 +451,7 @@
         <div class="city-modal-header-right">
           <div class="city-modal-status-pill" id="city-modal-status">
             <span class="status-indicator"></span>
-            <span class="status-label" id="city-modal-status-text">INITIALIZING SATELLITE...</span>
+            <span class="status-label" id="city-modal-status-text">FINDING THE CITY…</span>
           </div>
           <button type="button" class="city-modal-skip-btn" id="city-modal-skip-btn"
             title="Skip directly to street video">
@@ -473,24 +475,24 @@
           <!-- Gamified HUD Overlay -->
           <div class="city-map-hud" id="city-map-hud">
             <div class="hud-corner hud-top-left">
-              <span class="hud-mono" id="hud-target-name">TARGET: TOKYO</span>
+              <span class="hud-mono" id="hud-target-name">CITY: TOKYO</span>
               <span class="hud-mono hud-dim" id="hud-camera-zoom">ZOOM: 1.5</span>
             </div>
             <div class="hud-corner hud-bottom-left">
-              <span class="hud-label">ALTITUDE TRAJECTORY</span>
+              <span class="hud-label">APPROACH</span>
               <span class="hud-val" id="hud-altitude-label">ORBITAL VIEW</span>
             </div>
             <div class="hud-corner hud-bottom-right">
-              <span class="hud-mono" id="hud-fps-label">GPS LOCK: 100%</span>
+              <span class="hud-mono" id="hud-fps-label">STREET LEVEL</span>
             </div>
           </div>
           <!-- Fallback / Token Error if WebGL or Mapbox token fails -->
           <div class="city-map-fallback" id="city-map-fallback" style="display: none;">
             <div class="fallback-content">
-              <div class="fallback-badge">🛰️ SATELLITE TELEMETRY NOTICE</div>
-              <h3 class="fallback-title" id="fallback-title">Mapbox Access Token Required</h3>
-              <p class="fallback-desc" id="fallback-desc">To render real-time 3D buildings and satellite atmospheric
-                flight, enter a Mapbox Public Token:</p>
+              <div class="fallback-badge">MAP PAUSED</div>
+              <h3 class="fallback-title" id="fallback-title">The map needs a moment.</h3>
+              <p class="fallback-desc" id="fallback-desc">Enter a Mapbox public token to load the 3D city view, or
+                continue straight to the street.</p>
               <div class="fallback-token-row" id="fallback-token-row">
                 <input type="text" id="mapbox-token-input" placeholder="pk.eyJ1..." class="fallback-token-input"
                   spellcheck="false" autocomplete="off">
@@ -509,6 +511,17 @@
         <div class="city-modal-video-stage" id="city-modal-video-stage" style="display: none; opacity: 0;">
           <div class="city-video-frame" id="city-video-frame">
             <video id="city-video" class="city-video" muted autoplay loop playsinline preload="metadata"></video>
+          </div>
+
+          <div class="city-video-loading" id="city-video-loading">
+            <span class="city-video-loading-label" id="city-video-loading-label">ENTERING THE CITY…</span>
+            <span class="city-video-loading-line"></span>
+          </div>
+
+          <div class="city-video-fallback" id="city-video-fallback" hidden>
+            <span class="city-video-fallback-badge">STREET VIEW UNAVAILABLE</span>
+            <p>This street is quiet right now.</p>
+            <button type="button" class="city-video-fallback-btn" id="city-video-fallback-btn">Back to cities</button>
           </div>
 
           <!-- Custom Drive & Listen Minimal Controls HUD -->
@@ -552,6 +565,13 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Smooth Trailing Cursor Follower -->
+  <div class="custom-cursor" id="custom-cursor" aria-hidden="true">
+    <div class="cursor-circle">
+      <span class="cursor-label" id="cursor-label"></span>
     </div>
   </div>
 

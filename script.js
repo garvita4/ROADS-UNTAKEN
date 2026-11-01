@@ -15,15 +15,6 @@ if (hamburger && navMenu) {
   });
 }
 
-document.addEventListener("mousemove", (e) => {
-  const x = (window.innerWidth - e.pageX * 2) / 100;
-  const y = (window.innerHeight - e.pageY * 2) / 100;
-  const heroBg = document.querySelector(".hero-bg");
-  if (heroBg) {
-      heroBg.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`;
-  }
-});
-
 const hasGsap = typeof gsap !== "undefined";
 const hasScrollTrigger = typeof ScrollTrigger !== "undefined";
 
@@ -36,6 +27,87 @@ if (hasGsap && hasScrollTrigger) {
 }
 
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+const finePointerQuery = window.matchMedia("(pointer: fine)");
+
+const heroSection = document.querySelector(".hero");
+const heroBgLayer = document.querySelector(".hero-bg");
+const heroCta = document.getElementById("explore-btn");
+
+if (heroSection && !reducedMotionQuery.matches && finePointerQuery.matches) {
+  let pointerFrame = null;
+  let pointerX = 0;
+  let pointerY = 0;
+
+  const resetHeroEffects = () => {
+    if (pointerFrame) {
+      cancelAnimationFrame(pointerFrame);
+      pointerFrame = null;
+    }
+
+    heroSection.classList.remove("is-pointer-active");
+    heroSection.style.setProperty("--hero-x", "50%");
+    heroSection.style.setProperty("--hero-y", "50%");
+
+    if (heroBgLayer) {
+      heroBgLayer.style.translate = "0px 0px";
+    }
+
+    if (heroCta) {
+      heroCta.style.setProperty("--magnet-x", "0px");
+      heroCta.style.setProperty("--magnet-y", "0px");
+    }
+  };
+
+  const updateHeroEffects = () => {
+    pointerFrame = null;
+
+    const rect = heroSection.getBoundingClientRect();
+    const localX = pointerX - rect.left;
+    const localY = pointerY - rect.top;
+    const xRatio = localX / rect.width - 0.5;
+    const yRatio = localY / rect.height - 0.5;
+
+    heroSection.style.setProperty("--hero-x", `${(xRatio + 0.5) * 100}%`);
+    heroSection.style.setProperty("--hero-y", `${(yRatio + 0.5) * 100}%`);
+
+    if (heroBgLayer) {
+      heroBgLayer.style.translate = `${(-xRatio * 14).toFixed(2)}px ${(-yRatio * 10).toFixed(2)}px`;
+    }
+  };
+
+  heroSection.addEventListener("mousemove", (e) => {
+    pointerX = e.clientX;
+    pointerY = e.clientY;
+    heroSection.classList.add("is-pointer-active");
+
+    if (!pointerFrame) {
+      pointerFrame = requestAnimationFrame(updateHeroEffects);
+    }
+  });
+
+  heroSection.addEventListener("mouseleave", resetHeroEffects);
+
+  if (heroCta) {
+    const magnetStrength = 0.16;
+    const magnetLimit = 9;
+
+    heroCta.addEventListener("mousemove", (e) => {
+      const rect = heroCta.getBoundingClientRect();
+      const dx = e.clientX - (rect.left + rect.width / 2);
+      const dy = e.clientY - (rect.top + rect.height / 2);
+      const magnetX = Math.max(-magnetLimit, Math.min(magnetLimit, dx * magnetStrength));
+      const magnetY = Math.max(-magnetLimit, Math.min(magnetLimit, dy * magnetStrength));
+
+      heroCta.style.setProperty("--magnet-x", `${magnetX.toFixed(2)}px`);
+      heroCta.style.setProperty("--magnet-y", `${magnetY.toFixed(2)}px`);
+    });
+
+    heroCta.addEventListener("mouseleave", () => {
+      heroCta.style.setProperty("--magnet-x", "0px");
+      heroCta.style.setProperty("--magnet-y", "0px");
+    });
+  }
+}
 
 function setStoryStep(step) {
   document.querySelectorAll(".story-step").forEach((s) => {
@@ -90,7 +162,7 @@ if (hasGsap && hasScrollTrigger) {
         gsap.set(".scroll-one .scroll-two-header", { y: -25 });
         gsap.set(".opening-journey", { opacity: 0, x: -25 });
         gsap.set(".scroll-one .story-copy", { scale: 0.94 });
-        gsap.set(".scroll-one .detail-card", { x: 50, filter: "blur(6px)" });
+        gsap.set(".scroll-one .detail-card", { x: 50 });
         gsap.set(".scroll-one .scroll-footer", { y: 32 });
 
         gsap.set(".scroll-two-bg", { opacity: 1, scale: 1.18 });
@@ -106,7 +178,7 @@ if (hasGsap && hasScrollTrigger) {
 
         gsap.set(".scroll-two .s2-header", { y: -25 });
         gsap.set(".scroll-two .s2-intro", { y: 30 });
-        gsap.set(".scroll-two .s2-panel", { x: 35, filter: "blur(8px)" });
+        gsap.set(".scroll-two .s2-panel", { x: 35 });
         gsap.set(".scroll-two .s2-mode-card", { y: 24 });
         gsap.set(".scroll-two .s2-location-pill, .scroll-two .s2-sound-control", { y: 15 });
 
@@ -163,7 +235,7 @@ if (hasGsap && hasScrollTrigger) {
             ease: "power2.out"
         }, 0.02);
 
-        openingTimeline.to(".hero .hero-title", {
+        openingTimeline.to(".hero .hero-content", {
             autoAlpha: 0,
             y: -44,
             duration: 0.14,
@@ -209,7 +281,6 @@ if (hasGsap && hasScrollTrigger) {
         openingTimeline.to(".scroll-one .detail-card", {
             opacity: 1,
             x: 0,
-            filter: "blur(0px)",
             duration: 0.12,
             ease: "power3.out"
         }, 0.18);
@@ -242,7 +313,6 @@ if (hasGsap && hasScrollTrigger) {
         openingTimeline.to(".scroll-one .detail-card", {
             autoAlpha: 0,
             x: 36,
-            filter: "blur(6px)",
             duration: 0.1,
             ease: "power2.in"
         }, 0.45);
@@ -291,7 +361,6 @@ if (hasGsap && hasScrollTrigger) {
         openingTimeline.to(".scroll-two .s2-panel", {
             opacity: 1,
             x: 0,
-            filter: "blur(0px)",
             duration: 0.14,
             ease: "power3.out"
         }, 0.6);
@@ -339,7 +408,6 @@ if (hasGsap && hasScrollTrigger) {
         openingTimeline.to(".scroll-two .s2-panel", {
             autoAlpha: 0,
             x: 34,
-            filter: "blur(7px)",
             duration: 0.09,
             ease: "power2.in"
         }, 0.75);
@@ -449,9 +517,9 @@ function scrollToOpeningStage(progress, duration = 1.4) {
     return true;
 }
 
-const exploreBtn = document.getElementById("explore-btn");
-if (exploreBtn) {
-    exploreBtn.addEventListener("click", (e) => {
+const heroExploreLinks = document.querySelectorAll("#explore-btn, #hero-scroll-cue");
+heroExploreLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
         if (scrollToOpeningStage(OPENING_STAGE_PROGRESS.notice, 1.6)) {
             e.preventDefault();
             return;
@@ -466,7 +534,38 @@ if (exploreBtn) {
             behavior: "auto"
         });
     });
+});
+
+const revealDetail = document.getElementById("reveal-detail");
+if (revealDetail) {
+    revealDetail.addEventListener("click", (e) => {
+        if (scrollToOpeningStage(OPENING_STAGE_PROGRESS.explore)) {
+            e.preventDefault();
+            return;
+        }
+
+        const target = document.querySelector("#next-section");
+        if (!target) return;
+
+        e.preventDefault();
+        window.scrollTo({
+            top: target.getBoundingClientRect().top + window.scrollY,
+            behavior: "auto"
+        });
+    });
 }
+
+document.querySelectorAll('.story-step[data-step="explore"]').forEach((link) => {
+    link.addEventListener("click", (e) => {
+        if (scrollToOpeningStage(OPENING_STAGE_PROGRESS.explore)) e.preventDefault();
+    });
+});
+
+document.querySelectorAll('.s2-nav a[href="#next-section"], .scroll-cue[href="#next-section"]').forEach((link) => {
+    link.addEventListener("click", (e) => {
+        if (scrollToOpeningStage(OPENING_STAGE_PROGRESS.explore)) e.preventDefault();
+    });
+});
 
 [
     ['a[href="#cities"]', OPENING_STAGE_PROGRESS.feel]
@@ -507,9 +606,9 @@ s2ModeCards.forEach((card) => {
 
         if (label) {
             if (s2SelectedMode === "driving") {
-                label.textContent = "START DRIVING";
+                label.textContent = "DRIVE THE CITY";
             } else {
-                label.textContent = "START WALKING";
+                label.textContent = "WALK THE CITY";
             }
         }
     });
@@ -548,6 +647,7 @@ const cityData = {
         endBearing: 28,
         videoFile: "videos/tokyo.mp4",
         country: "Japan",
+        timezone: "Asia/Tokyo",
         tagline: "Shinjuku & Shibuya Neon Corridors"
     },
     paris: {
@@ -558,6 +658,7 @@ const cityData = {
         endBearing: -22,
         videoFile: "videos/paris.mp4",
         country: "France",
+        timezone: "Europe/Paris",
         tagline: "Haussmann Boulevards & Seine Glow"
     },
     newyork: {
@@ -568,6 +669,7 @@ const cityData = {
         endBearing: -36,
         videoFile: "videos/newyork.mp4",
         country: "United States",
+        timezone: "America/New_York",
         tagline: "Manhattan Canyons & 5th Avenue"
     },
     istanbul: {
@@ -578,6 +680,7 @@ const cityData = {
         endBearing: 16,
         videoFile: "videos/istanbul.mp4",
         country: "Turkey",
+        timezone: "Europe/Istanbul",
         tagline: "Bosphorus Crossings & Historic Old City"
     },
     mumbai: {
@@ -588,6 +691,7 @@ const cityData = {
         endBearing: -14,
         videoFile: "videos/mumbai.mp4",
         country: "India",
+        timezone: "Asia/Kolkata",
         tagline: "Colonial Grandeur & Coastal Roads"
     },
     lisbon: {
@@ -598,6 +702,7 @@ const cityData = {
         endBearing: 24,
         videoFile: "videos/lisbon.mp4",
         country: "Portugal",
+        timezone: "Europe/Lisbon",
         tagline: "Cobblestone Hills & Pastel Quarters"
     }
 };
@@ -617,6 +722,8 @@ let mapFlightTimeout = null;
 let autoplayCheckTimer = null;
 let wasAmbientPlaying = false;
 let currentCityData = null;
+let activeTimezone = null;
+let lastFocusedElement = null;
 
 const cityModal = document.getElementById("city-modal");
 const cityModalBackdrop = document.getElementById("city-modal-backdrop");
@@ -645,6 +752,10 @@ const cityVideoPlayOverlay = document.getElementById("city-video-play-overlay");
 const cityVideoBigPlay = document.getElementById("city-video-big-play");
 const videoModeBadge = document.getElementById("video-mode-badge");
 const videoCityTag = document.getElementById("video-city-tag");
+const cityVideoLoading = document.getElementById("city-video-loading");
+const cityVideoLoadingLabel = document.getElementById("city-video-loading-label");
+const cityVideoFallback = document.getElementById("city-video-fallback");
+const cityVideoFallbackBtn = document.getElementById("city-video-fallback-btn");
 
 function getMapboxStyle() {
     const customToken = window.MAPBOX_ACCESS_TOKEN || localStorage.getItem("MAPBOX_ACCESS_TOKEN");
@@ -757,7 +868,7 @@ function showMapError(title, desc) {
         if (titleEl) titleEl.textContent = title;
         if (descEl) descEl.textContent = desc;
     }
-    updateModalStatus("SATELLITE OFFLINE");
+    updateModalStatus("MAP UNAVAILABLE");
 }
 
 function updateModalStatus(text) {
@@ -773,6 +884,12 @@ function openCityModal(cityKey) {
     isModalOpen = true;
     isTransitioningToVideo = false;
     currentCityData = city;
+    lastFocusedElement = document.activeElement;
+
+    if (city.timezone) {
+        activeTimezone = city.timezone;
+        updateLocalClock();
+    }
 
     // Pause ambient background audio if playing
     const ambientAudio = document.getElementById("ambient-audio");
@@ -792,11 +909,11 @@ function openCityModal(cityKey) {
         const lngStr = `${Math.abs(lng).toFixed(4)}° ${lng >= 0 ? "E" : "W"}`;
         cityModalCoords.textContent = `${latStr}, ${lngStr}`;
     }
-    if (hudTargetName) hudTargetName.textContent = `TARGET: ${city.name.toUpperCase()}`;
+    if (hudTargetName) hudTargetName.textContent = `CITY: ${city.name.toUpperCase()}`;
     if (hudCameraZoom) hudCameraZoom.textContent = "ZOOM: 2.0";
-    if (hudAltitudeLabel) hudAltitudeLabel.textContent = "STRATOSPHERE (50 KM)";
+    if (hudAltitudeLabel) hudAltitudeLabel.textContent = "HIGH ABOVE THE CITY";
 
-    updateModalStatus("LOCATING SATELLITE...");
+    updateModalStatus("FINDING THE CITY…");
 
     // Reset stages
     if (cityMapStage) {
@@ -809,12 +926,23 @@ function openCityModal(cityKey) {
     }
     if (cityMapFallback) cityMapFallback.style.display = "none";
     if (cityVideoPlayOverlay) cityVideoPlayOverlay.style.display = "none";
+    if (cityVideoLoading) cityVideoLoading.hidden = true;
+    if (cityVideoFallback) cityVideoFallback.hidden = true;
     if (cityModalSkipBtn) cityModalSkipBtn.style.display = "inline-flex";
+    if (cityVideo) {
+        cityVideo.muted = true;
+        updateAudioButtonUI(false);
+    }
 
     // Show modal container
     cityModal.classList.add("is-active");
+    cityModal.classList.remove("is-immersive");
     cityModal.setAttribute("aria-hidden", "false");
     document.body.classList.add("city-modal-open");
+
+    window.requestAnimationFrame(() => {
+        if (cityModalCloseBtn) cityModalCloseBtn.focus();
+    });
 
     // GSAP Open Animation (fade + slight scale in)
     if (typeof gsap !== "undefined") {
@@ -853,12 +981,12 @@ function initCityMap(city) {
     const isMapboxAvailable = typeof mapboxgl !== "undefined" && (typeof mapboxgl.supported === "function" ? mapboxgl.supported() : true);
 
     if (!isMapboxAvailable) {
-        showMapError("WebGL Unsupported", "Hardware acceleration / WebGL is required for 3D satellite visualization.");
+        showMapError("This view needs WebGL.", "Hardware acceleration / WebGL is required for 3D satellite visualization.");
         return;
     }
 
     if (!token || !token.startsWith("pk.")) {
-        showMapError("Mapbox Access Token Missing", "Please provide a valid Mapbox Public Access Token (starts with 'pk.') to initialize 3D cities.");
+        showMapError("The map needs a token.", "Please provide a valid Mapbox Public Access Token (starts with 'pk.') to initialize 3D cities.");
         return;
     }
 
@@ -1010,8 +1138,8 @@ function initCityMap(city) {
             hasFlightStarted = true;
 
             map.resize();
-            updateModalStatus("DESCENDING TO CITY…");
-            if (hudAltitudeLabel) hudAltitudeLabel.textContent = "STRATOSPHERE (50 KM)";
+            updateModalStatus("APPROACHING THE CITY…");
+            if (hudAltitudeLabel) hudAltitudeLabel.textContent = "HIGH ABOVE THE CITY";
 
             // 2. Camera smoothly flies down while tilting into 3D perspective (~60° pitch)
             // Duration ~5.2 seconds (cinematic ~4-6s)
@@ -1045,7 +1173,7 @@ function initCityMap(city) {
             const altKm = 50 * Math.pow(0.005, progress);
 
             let altText = "";
-            let phase = "STRATOSPHERE";
+            let phase = "HIGH ABOVE";
             if (progress >= 0.92) {
                 phase = "CITY LEVEL";
                 altText = `${Math.round(altKm * 1000)} M`;
@@ -1056,7 +1184,7 @@ function initCityMap(city) {
                 phase = "DESCENT";
                 altText = `${altKm.toFixed(1)} KM`;
             } else {
-                phase = "STRATOSPHERE";
+                phase = "HIGH ABOVE";
                 altText = `${altKm.toFixed(1)} KM`;
             }
 
@@ -1073,7 +1201,7 @@ function initCityMap(city) {
             if (!hasFlightStarted) return;
             isFlightCompleted = true;
 
-            updateModalStatus("3D SKYLINE ACTIVE • ENTERING STREET LEVEL");
+            updateModalStatus("THE SKYLINE SETTLES…");
             if (hudAltitudeLabel) hudAltitudeLabel.textContent = "CITY LEVEL (GROUND)";
 
             // Hold on the 3D skyline before transitioning to street video
@@ -1087,7 +1215,7 @@ function initCityMap(city) {
         map.on("error", (e) => {
             console.warn("Mapbox error:", e);
             if (e && e.error && (e.error.status === 401 || e.error.status === 403)) {
-                showMapError("Mapbox Authorization Failed", "The provided Mapbox Access Token is invalid or unauthorized.");
+                showMapError("The map access expired.", "The provided Mapbox Access Token is invalid or unauthorized.");
             }
         });
 
@@ -1100,7 +1228,7 @@ function initCityMap(city) {
 
     } catch (err) {
         console.error("Map initialization failed:", err);
-        showMapError("Mapbox Initialization Error", err.message || "Failed to load 3D map engine.");
+        showMapError("The map could not open.", err.message || "Failed to load 3D map engine.");
     }
 }
 
@@ -1117,10 +1245,15 @@ function transitionToVideo(city) {
         cityModalSkipBtn.style.display = "none";
     }
 
-    updateModalStatus("STREET IMMERSION ACTIVE");
+    if (cityModal) {
+        cityModal.classList.add("is-immersive");
+    }
+
+    updateModalStatus("ENTERING THE STREET…");
 
     // GSAP smooth transition from map to video
     if (typeof gsap !== "undefined") {
+        gsap.killTweensOf([cityMapStage, cityVideoStage]);
         const tl = gsap.timeline();
         tl.to(cityMapStage, {
             opacity: 0,
@@ -1170,6 +1303,15 @@ function startCityVideo(city) {
     // Determine local MP4 file path
     const videoSrc = city.videoFile || `videos/${(city.name || "").toLowerCase().replace(/\s+/g, "")}.mp4`;
 
+    if (cityVideoLoadingLabel) {
+        cityVideoLoadingLabel.textContent = `ENTERING ${city.name.toUpperCase()}…`;
+    }
+    if (cityVideoLoading) {
+        cityVideoLoading.hidden = false;
+        cityVideoLoading.classList.remove("is-hidden");
+    }
+    if (cityVideoFallback) cityVideoFallback.hidden = true;
+
     // Only set src if not already loaded
     if (cityVideo.getAttribute("src") !== videoSrc) {
         cityVideo.src = videoSrc;
@@ -1183,12 +1325,54 @@ function startCityVideo(city) {
     const playPromise = cityVideo.play();
     if (playPromise !== undefined) {
         playPromise.then(() => {
+            hideVideoLoading();
             hidePlayOverlay();
+            updateModalStatus("YOU'RE HERE.");
         }).catch((err) => {
             console.warn("Autoplay blocked by browser policy, showing play overlay:", err);
+            hideVideoLoading();
+            if (cityVideoFallback && !cityVideoFallback.hidden) return;
             showPlayOverlay();
         });
     }
+}
+
+function hideVideoLoading() {
+    if (!cityVideoLoading) return;
+    cityVideoLoading.classList.add("is-hidden");
+    window.setTimeout(() => {
+        if (cityVideoLoading && cityVideoLoading.classList.contains("is-hidden")) {
+            cityVideoLoading.hidden = true;
+        }
+    }, 460);
+}
+
+function showVideoFallback() {
+    if (!isModalOpen) return;
+    hideVideoLoading();
+    hidePlayOverlay();
+    if (cityVideoFallback) cityVideoFallback.hidden = false;
+    updateModalStatus("STREET VIEW UNAVAILABLE");
+    if (cityVideo) {
+        cityVideo.pause();
+    }
+}
+
+if (cityVideo) {
+    cityVideo.addEventListener("canplay", hideVideoLoading);
+    cityVideo.addEventListener("playing", () => {
+        hideVideoLoading();
+        hidePlayOverlay();
+        updateModalStatus("YOU'RE HERE.");
+    });
+    cityVideo.addEventListener("error", () => {
+        if (!isModalOpen || !cityVideo.getAttribute("src")) return;
+        showVideoFallback();
+    });
+}
+
+if (cityVideoFallbackBtn) {
+    cityVideoFallbackBtn.addEventListener("click", closeCityModal);
 }
 
 function toggleCityVideoAudio() {
@@ -1239,9 +1423,17 @@ function hidePlayOverlay() {
     }
 }
 
+function restoreModalFocus() {
+    if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+        lastFocusedElement.focus({ preventScroll: true });
+    }
+    lastFocusedElement = null;
+}
+
 function closeCityModal() {
     if (!isModalOpen) return;
     isModalOpen = false;
+    isTransitioningToVideo = false;
 
     if (mapFlightTimeout) {
         clearTimeout(mapFlightTimeout);
@@ -1255,10 +1447,16 @@ function closeCityModal() {
     // 1. Pause and reset local video completely (halt sound & free decoding memory)
     if (cityVideo) {
         cityVideo.pause();
+        cityVideo.muted = true;
+        updateAudioButtonUI(false);
         cityVideo.removeAttribute("src");
         cityVideo.load();
     }
     hidePlayOverlay();
+    hideVideoLoading();
+    if (cityVideoFallback) cityVideoFallback.hidden = true;
+    if (cityModal) cityModal.classList.remove("is-immersive");
+    updateModalStatus("FINDING THE CITY…");
 
     // 2. Destroy Mapbox instance cleanly
     if (activeMap) {
@@ -1300,6 +1498,7 @@ function closeCityModal() {
                     cityVideoStage.style.opacity = "0";
                 }
                 hidePlayOverlay();
+                restoreModalFocus();
             }
         });
     } else {
@@ -1315,6 +1514,7 @@ function closeCityModal() {
             cityVideoStage.style.opacity = "0";
         }
         hidePlayOverlay();
+        restoreModalFocus();
     }
 
     // Resume ambient background audio if it was active before opening
@@ -1388,8 +1588,34 @@ window.addEventListener("message", (e) => {
 });
 
 document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && isModalOpen) {
+    if (!isModalOpen) return;
+
+    if (e.key === "Escape") {
         closeCityModal();
+        return;
+    }
+
+    if (e.key !== "Tab" || !cityModalDialog) return;
+
+    const focusable = Array.from(cityModalDialog.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter((el) => el.offsetParent !== null || el === document.activeElement);
+
+    if (!focusable.length) {
+        e.preventDefault();
+        cityModalDialog.focus();
+        return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (e.shiftKey && (document.activeElement === first || document.activeElement === cityModalDialog)) {
+        e.preventDefault();
+        last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
     }
 });
 
@@ -1441,7 +1667,8 @@ function updateLocalClock() {
     const time = new Intl.DateTimeFormat("en-GB", {
         hour: "2-digit",
         minute: "2-digit",
-        hour12: false
+        hour12: false,
+        timeZone: activeTimezone || undefined
     }).format(new Date());
 
     clocks.forEach((clock) => {
@@ -1494,3 +1721,226 @@ function setupSoundControls() {
 }
 
 setupSoundControls();
+
+/* ==========================================================================
+   Smooth Trailing Cursor Engine
+   ========================================================================== */
+function initSmoothTrailingCursor() {
+    const finePointer = window.matchMedia("(pointer: fine) and (hover: hover)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const cursorEl = document.getElementById("custom-cursor");
+    const cursorLabelEl = document.getElementById("cursor-label");
+
+    if (!cursorEl || !cursorLabelEl) return;
+
+    let mouseX = -100;
+    let mouseY = -100;
+    let currX = -100;
+    let currY = -100;
+    let isInitialized = false;
+    let isVisible = false;
+    let isIdle = true;
+    let rafId = null;
+    let lastTime = performance.now();
+
+    // Viscous air-drag damping coefficient for weighted inertia
+    const DAMPING_LAMBDA = 11;
+
+    const INTERACTIVE_SELECTOR = [
+        "a",
+        "button",
+        "input[type='button']",
+        "input[type='submit']",
+        "input[type='reset']",
+        "[role='button']",
+        ".s3-city-card",
+        ".s2-mode-card",
+        ".story-step",
+        ".explore-link",
+        ".reveal-button",
+        ".s2-start-button",
+        ".s2-sound-control",
+        ".hero-scroll-cue",
+        ".scroll-cue",
+        ".city-video-audio-toggle",
+        ".city-video-big-play",
+        ".city-video-close",
+        "[data-cursor]",
+        "[data-cursor-label]"
+    ].join(", ");
+
+    function getCursorLabel(el) {
+        if (!el) return "";
+        if (el.dataset.cursor) return el.dataset.cursor;
+        if (el.dataset.cursorLabel) return el.dataset.cursorLabel;
+
+        if (el.id === "explore-btn" || el.classList.contains("explore-link")) return "Enter";
+        if (el.classList.contains("s3-city-card")) return "Explore";
+        if (el.classList.contains("s2-start-button")) return "Start";
+        if (el.classList.contains("reveal-button")) return "Discover";
+        if (el.classList.contains("city-video-big-play")) return "Play";
+        if (el.classList.contains("city-video-close")) return "Close";
+        if (el.classList.contains("s2-sound-control") || el.classList.contains("city-video-audio-toggle")) return "Sound";
+        if (el.classList.contains("hero-scroll-cue") || el.classList.contains("scroll-cue")) return "Scroll";
+        if (el.classList.contains("s2-signin")) return "Sign In";
+
+        if (el.classList.contains("s2-mode-card")) {
+            const mode = el.getAttribute("data-mode");
+            if (mode === "driving") return "Drive";
+            if (mode === "walking") return "Walk";
+        }
+
+        return "";
+    }
+
+    function checkActiveState() {
+        return finePointer.matches && !reducedMotion.matches;
+    }
+
+    function updateActiveState() {
+        if (checkActiveState()) {
+            if (isInitialized) {
+                document.documentElement.classList.add("has-custom-cursor");
+            }
+            cursorEl.style.display = "";
+        } else {
+            document.documentElement.classList.remove("has-custom-cursor");
+            cursorEl.style.display = "none";
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
+            isIdle = true;
+        }
+    }
+
+    function renderLoop(now) {
+        const dt = Math.min((now - lastTime) / 1000, 0.1);
+        lastTime = now;
+
+        const factor = 1 - Math.exp(-DAMPING_LAMBDA * dt);
+        const dx = mouseX - currX;
+        const dy = mouseY - currY;
+
+        currX += dx * factor;
+        currY += dy * factor;
+
+        cursorEl.style.transform = `translate3d(${currX.toFixed(2)}px, ${currY.toFixed(2)}px, 0)`;
+
+        if (Math.hypot(dx, dy) > 0.08) {
+            rafId = requestAnimationFrame(renderLoop);
+        } else {
+            currX = mouseX;
+            currY = mouseY;
+            cursorEl.style.transform = `translate3d(${currX.toFixed(2)}px, ${currY.toFixed(2)}px, 0)`;
+            isIdle = true;
+            rafId = null;
+        }
+    }
+
+    function onPointerMove(e) {
+        if (!checkActiveState()) return;
+
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        if (!isInitialized) {
+            currX = mouseX;
+            currY = mouseY;
+            cursorEl.style.transform = `translate3d(${currX.toFixed(2)}px, ${currY.toFixed(2)}px, 0)`;
+            document.documentElement.classList.add("has-custom-cursor");
+            isInitialized = true;
+        }
+
+        if (!isVisible) {
+            cursorEl.classList.remove("is-hidden");
+            cursorEl.classList.add("is-visible");
+            isVisible = true;
+        }
+
+        if (isIdle) {
+            isIdle = false;
+            lastTime = performance.now();
+            rafId = requestAnimationFrame(renderLoop);
+        }
+    }
+
+    function onPointerOver(e) {
+        if (!checkActiveState()) return;
+        const target = e.target.closest(INTERACTIVE_SELECTOR);
+        if (target) {
+            cursorEl.classList.add("is-hovering");
+            const label = getCursorLabel(target);
+            if (label) {
+                cursorLabelEl.textContent = label;
+                cursorEl.classList.add("has-label");
+            } else {
+                cursorLabelEl.textContent = "";
+                cursorEl.classList.remove("has-label");
+            }
+        }
+    }
+
+    function onPointerOut(e) {
+        if (!checkActiveState()) return;
+        const related = e.relatedTarget ? e.relatedTarget.closest(INTERACTIVE_SELECTOR) : null;
+        if (!related) {
+            cursorEl.classList.remove("is-hovering", "has-label");
+            cursorLabelEl.textContent = "";
+        } else {
+            const label = getCursorLabel(related);
+            if (label) {
+                cursorLabelEl.textContent = label;
+                cursorEl.classList.add("has-label");
+            } else {
+                cursorLabelEl.textContent = "";
+                cursorEl.classList.remove("has-label");
+            }
+        }
+    }
+
+    function onPointerDown() {
+        if (!checkActiveState()) return;
+        cursorEl.classList.add("is-clicking");
+    }
+
+    function onPointerUp() {
+        if (!checkActiveState()) return;
+        cursorEl.classList.remove("is-clicking");
+    }
+
+    function onMouseLeave() {
+        cursorEl.classList.remove("is-visible");
+        cursorEl.classList.add("is-hidden");
+        isVisible = false;
+    }
+
+    function onMouseEnter() {
+        if (!checkActiveState()) return;
+        cursorEl.classList.remove("is-hidden");
+        cursorEl.classList.add("is-visible");
+        isVisible = true;
+    }
+
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    document.addEventListener("pointerover", onPointerOver, { passive: true });
+    document.addEventListener("pointerout", onPointerOut, { passive: true });
+    window.addEventListener("pointerdown", onPointerDown, { passive: true });
+    window.addEventListener("pointerup", onPointerUp, { passive: true });
+    document.addEventListener("mouseleave", onMouseLeave);
+    document.addEventListener("mouseenter", onMouseEnter);
+    window.addEventListener("blur", onMouseLeave);
+    window.addEventListener("focus", onMouseEnter);
+
+    finePointer.addEventListener("change", updateActiveState);
+    reducedMotion.addEventListener("change", updateActiveState);
+
+    updateActiveState();
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initSmoothTrailingCursor);
+} else {
+    initSmoothTrailingCursor();
+}
