@@ -186,14 +186,16 @@ if (hasGsap && hasScrollTrigger) {
 
         gsap.set([
             ".scroll-three .s3-header",
+            ".scroll-three .s3-intro-row",
             ".scroll-three .s3-intro",
+            ".scroll-three .s3-city-carousel-wrap",
             ".scroll-three .s3-city-grid",
             ".scroll-three .s3-footer"
         ], { autoAlpha: 0 });
 
         gsap.set(".scroll-three .s3-header", { y: -22 });
-        gsap.set(".scroll-three .s3-intro", { y: 28 });
-        gsap.set(".scroll-three .s3-city-grid", { y: 22, scale: 1.04 });
+        gsap.set([".scroll-three .s3-intro-row", ".scroll-three .s3-intro"], { y: 28 });
+        gsap.set([".scroll-three .s3-city-carousel-wrap", ".scroll-three .s3-city-grid"], { y: 22, scale: 1.04 });
         gsap.set(".scroll-three .s3-city-copy", { y: 10 });
         gsap.set(".scroll-three .s3-footer", { y: 18 });
 
@@ -446,14 +448,14 @@ if (hasGsap && hasScrollTrigger) {
             ease: "power2.out"
         }, 0.78);
 
-        openingTimeline.to(".scroll-three .s3-intro", {
+        openingTimeline.to([".scroll-three .s3-intro-row", ".scroll-three .s3-intro"], {
             autoAlpha: 1,
             y: 0,
             duration: 0.08,
             ease: "power3.out"
         }, 0.79);
 
-        openingTimeline.to(".scroll-three .s3-city-grid", {
+        openingTimeline.to([".scroll-three .s3-city-carousel-wrap", ".scroll-three .s3-city-grid"], {
             autoAlpha: 1,
             y: 0,
             scale: 1,
@@ -577,11 +579,11 @@ document.querySelectorAll('.s2-nav a[href="#next-section"], .scroll-cue[href="#n
     });
 });
 
-if (location.hash === "#cities") {
+if (typeof window !== "undefined" && window.location && window.location.hash === "#cities") {
     window.addEventListener("load", () => {
         window.setTimeout(() => {
             scrollToOpeningStage(OPENING_STAGE_PROGRESS.choose);
-        }, 60);
+        }, 120);
     });
 }
 
@@ -638,13 +640,19 @@ s2StartButtons.forEach((s2StartButton) => {
 // ==========================================================================
 // CITY CONFIGURATION & DATA STRUCTURE
 // ==========================================================================
+// CITY DATA & HIGH-DEFINITION 4K ZERO-CHROME STREET TOURS
+// ==========================================================================
 const cityData = {
     tokyo: {
         name: "Tokyo",
         coords: [139.6917, 35.6895],
-        endZoom: 15.5,
-        endPitch: 62,
+        endZoom: 15.6,
+        endPitch: 64,
         endBearing: 28,
+        youtube: {
+            driving: "joPpxvhS2_I", // Tokyo Morning 4K Drive
+            walking: "4smIgSkZOTc"  // Tokyo Shinjuku 4K Night Walk
+        },
         videoFile: "videos/tokyo.mp4",
         country: "Japan",
         timezone: "Asia/Tokyo",
@@ -654,8 +662,12 @@ const cityData = {
         name: "Paris",
         coords: [2.3522, 48.8566],
         endZoom: 15.4,
-        endPitch: 62,
+        endPitch: 63,
         endBearing: -22,
+        youtube: {
+            driving: "xWykIGjCtr0", // Paris Downtown 4K Drive
+            walking: "C7j49pJTBEk"  // Paris 4K HDR Walking Tour
+        },
         videoFile: "videos/paris.mp4",
         country: "France",
         timezone: "Europe/Paris",
@@ -665,8 +677,12 @@ const cityData = {
         name: "New York",
         coords: [-74.0060, 40.7128],
         endZoom: 15.6,
-        endPitch: 63,
+        endPitch: 64,
         endBearing: -36,
+        youtube: {
+            driving: "7OgQjRn2x1w", // New York 4K Drive
+            walking: "caHn6rkejSI"  // NYC 5th Ave Sunset Walk
+        },
         videoFile: "videos/newyork.mp4",
         country: "United States",
         timezone: "America/New_York",
@@ -675,9 +691,13 @@ const cityData = {
     istanbul: {
         name: "Istanbul",
         coords: [28.9784, 41.0082],
-        endZoom: 15.2,
-        endPitch: 58,
+        endZoom: 15.3,
+        endPitch: 60,
         endBearing: 16,
+        youtube: {
+            driving: "PMc2UhLaDlA", // Istanbul 4K Drive
+            walking: "F2gWAAFhoNg"  // Istanbul 4K Walk
+        },
         videoFile: "videos/istanbul.mp4",
         country: "Turkey",
         timezone: "Europe/Istanbul",
@@ -686,9 +706,13 @@ const cityData = {
     mumbai: {
         name: "Mumbai",
         coords: [72.8777, 19.0760],
-        endZoom: 15.3,
-        endPitch: 60,
+        endZoom: 15.4,
+        endPitch: 62,
         endBearing: -14,
+        youtube: {
+            driving: "Oj3sd0idv2k", // Mumbai Downtown 4K Drive
+            walking: "VF-cvqRWWaw"  // Mumbai Streets 4K Walk
+        },
         videoFile: "videos/mumbai.mp4",
         country: "India",
         timezone: "Asia/Kolkata",
@@ -698,12 +722,46 @@ const cityData = {
         name: "Lisbon",
         coords: [-9.1393, 38.7223],
         endZoom: 15.3,
-        endPitch: 58,
+        endPitch: 60,
         endBearing: 24,
+        youtube: {
+            driving: "bVFDlEk98rs", // Lisbon 4K Drive
+            walking: "rpb5KRBMSRI"  // Lisbon 4K Walk
+        },
         videoFile: "videos/lisbon.mp4",
         country: "Portugal",
         timezone: "Europe/Lisbon",
         tagline: "Cobblestone Hills & Pastel Quarters"
+    },
+    seoul: {
+        name: "Seoul",
+        coords: [126.9780, 37.5665],
+        endZoom: 15.5,
+        endPitch: 63,
+        endBearing: -18,
+        youtube: {
+            driving: "EbDIVva1_e8", // Midnight in Seoul 4K Drive
+            walking: "SIGdNj_5ouE"  // Seoul Sunset 4K Walk
+        },
+        videoFile: "videos/seoul.mp4",
+        country: "South Korea",
+        timezone: "Asia/Seoul",
+        tagline: "Gangnam Neon & Han River Bridges"
+    },
+    cairo: {
+        name: "Cairo",
+        coords: [31.2357, 30.0444],
+        endZoom: 15.3,
+        endPitch: 60,
+        endBearing: 22,
+        youtube: {
+            driving: "86pZTI5gJQM", // Cairo 4K Night Drive
+            walking: "48PXW6V8Cj4"  // Cairo Khan el-Khalili 4K Walk
+        },
+        videoFile: "videos/cairo.mp4",
+        country: "Egypt",
+        timezone: "Africa/Cairo",
+        tagline: "Nile Corniche & Historic Khan el-Khalili"
     }
 };
 
@@ -714,16 +772,24 @@ function getActiveMapboxToken() {
     return window.MAPBOX_ACCESS_TOKEN || localStorage.getItem("MAPBOX_ACCESS_TOKEN") || MAPBOX_DEFAULT_TOKEN;
 }
 
-// Modal State Management
+// Modal & Stage State Management
 let activeMap = null;
 let isModalOpen = false;
-let isTransitioningToVideo = false;
+let underMapPreloadStarted = false;
+let isFinalPushTriggered = false;
+let isFlightComplete = false;
+let activeYtPlayer = null;
+let isYtPlaying = false;
+let isAudioUnmuted = true;
+let currentStreetMode = "walking";
+let underMapTimer = null;
+let finalPushTimer = null;
 let mapFlightTimeout = null;
-let autoplayCheckTimer = null;
 let wasAmbientPlaying = false;
 let currentCityData = null;
 let activeTimezone = null;
 let lastFocusedElement = null;
+let ytApiReadyPromise = null;
 
 const cityModal = document.getElementById("city-modal");
 const cityModalBackdrop = document.getElementById("city-modal-backdrop");
@@ -746,11 +812,13 @@ const hudCameraZoom = document.getElementById("hud-camera-zoom");
 const cityVideoStage = document.getElementById("city-modal-video-stage");
 const cityVideoFrame = document.getElementById("city-video-frame");
 const cityVideo = document.getElementById("city-video");
+const cityVideoShield = document.getElementById("city-video-shield");
 const cityVideoAudioBtn = document.getElementById("city-video-audio-btn");
 const cityVideoAudioLabel = document.getElementById("city-video-audio-label");
 const cityVideoPlayOverlay = document.getElementById("city-video-play-overlay");
 const cityVideoBigPlay = document.getElementById("city-video-big-play");
 const videoModeBadge = document.getElementById("video-mode-badge");
+const videoModeBadgeBtn = document.getElementById("video-mode-badge-btn");
 const videoCityTag = document.getElementById("video-city-tag");
 const cityVideoLoading = document.getElementById("city-video-loading");
 const cityVideoLoadingLabel = document.getElementById("city-video-loading-label");
@@ -860,6 +928,355 @@ function getMapboxStyle() {
     };
 }
 
+function updateModalStatus(text) {
+    if (cityModalStatusText) {
+        cityModalStatusText.textContent = text;
+    }
+}
+
+// ==========================================================================
+// ZERO-CHROME YOUTUBE & STREET IMMERSION LIFECYCLE
+// ==========================================================================
+
+function loadYouTubeApi() {
+    if (window.YT && window.YT.Player) {
+        return Promise.resolve(window.YT);
+    }
+    if (ytApiReadyPromise) return ytApiReadyPromise;
+
+    ytApiReadyPromise = new Promise((resolve) => {
+        const prev = window.onYouTubeIframeAPIReady;
+        window.onYouTubeIframeAPIReady = () => {
+            if (typeof prev === "function") prev();
+            resolve(window.YT);
+        };
+        if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+            const tag = document.createElement("script");
+            tag.src = "https://www.youtube.com/iframe_api";
+            document.head.appendChild(tag);
+        }
+    });
+    return ytApiReadyPromise;
+}
+
+function destroyYouTubePlayer() {
+    if (activeYtPlayer) {
+        try {
+            activeYtPlayer.stopVideo();
+            activeYtPlayer.destroy();
+        } catch (e) {}
+        activeYtPlayer = null;
+    }
+    const wrap = document.getElementById("city-youtube-wrap");
+    if (wrap) {
+        wrap.innerHTML = '<div id="city-youtube-player"></div>';
+    }
+}
+
+function updateModeBadgeUI(mode) {
+    if (videoModeBadge) {
+        videoModeBadge.textContent = (mode === "driving") ? "DRIVING TOUR" : "WALKING TOUR";
+    }
+}
+
+function updateAudioButtonUI(isUnmuted) {
+    if (!cityVideoAudioBtn) return;
+    const mutedIcon = cityVideoAudioBtn.querySelector(".audio-muted-icon");
+    const unmutedIcon = cityVideoAudioBtn.querySelector(".audio-unmuted-icon");
+
+    cityVideoAudioBtn.classList.toggle("is-unmuted", isUnmuted);
+    if (mutedIcon) mutedIcon.style.display = isUnmuted ? "none" : "block";
+    if (unmutedIcon) unmutedIcon.style.display = isUnmuted ? "block" : "none";
+    if (cityVideoAudioLabel) {
+        cityVideoAudioLabel.textContent = isUnmuted ? "MUTE AUDIO" : "UNMUTE AUDIO";
+    }
+}
+
+function toggleStreetAudio() {
+    isAudioUnmuted = !isAudioUnmuted;
+    if (activeYtPlayer && typeof activeYtPlayer.isMuted === "function") {
+        if (isAudioUnmuted) {
+            activeYtPlayer.unMute();
+            activeYtPlayer.setVolume(100);
+        } else {
+            activeYtPlayer.mute();
+        }
+    }
+    if (cityVideo && cityVideo.getAttribute("src")) {
+        cityVideo.muted = !isAudioUnmuted;
+    }
+    updateAudioButtonUI(isAudioUnmuted);
+}
+
+function toggleStreetPlayPause() {
+    if (activeYtPlayer && typeof activeYtPlayer.getPlayerState === "function") {
+        const state = activeYtPlayer.getPlayerState();
+        if (state === 1) { // PLAYING
+            activeYtPlayer.pauseVideo();
+        } else {
+            activeYtPlayer.playVideo();
+            hidePlayOverlay();
+        }
+    } else if (cityVideo && cityVideo.getAttribute("src")) {
+        if (cityVideo.paused) {
+            cityVideo.play();
+            hidePlayOverlay();
+        } else {
+            cityVideo.pause();
+        }
+    }
+}
+
+function switchStreetPerspective() {
+    if (!currentCityData) return;
+    currentStreetMode = (currentStreetMode === "walking") ? "driving" : "walking";
+    updateModeBadgeUI(currentStreetMode);
+
+    const videoId = (currentCityData.youtube && (currentCityData.youtube[currentStreetMode] || currentCityData.youtube.walking || currentCityData.youtube.driving)) || "joPpxvhS2_I";
+
+    // Smooth subtle crossfade
+    if (typeof gsap !== "undefined") {
+        gsap.to(cityVideoFrame, {
+            opacity: 0.35,
+            duration: 0.25,
+            onComplete: () => {
+                if (activeYtPlayer && typeof activeYtPlayer.loadVideoById === "function") {
+                    activeYtPlayer.loadVideoById({
+                        videoId: videoId,
+                        startSeconds: 0
+                    });
+                    if (!isAudioUnmuted) {
+                        activeYtPlayer.mute();
+                    }
+                }
+                gsap.to(cityVideoFrame, { opacity: 1, duration: 0.45, delay: 0.1 });
+            }
+        });
+    } else {
+        if (activeYtPlayer && typeof activeYtPlayer.loadVideoById === "function") {
+            activeYtPlayer.loadVideoById({ videoId: videoId, startSeconds: 0 });
+            if (!isAudioUnmuted) activeYtPlayer.mute();
+        }
+    }
+}
+
+function startUnderMapPlayback(city) {
+    if (underMapPreloadStarted || !isModalOpen) return;
+    underMapPreloadStarted = true;
+
+    // Detect user preference from section 2
+    currentStreetMode = (typeof s2SelectedMode !== "undefined" && s2SelectedMode === "driving") ? "driving" : "walking";
+    updateModeBadgeUI(currentStreetMode);
+
+    if (videoCityTag) {
+        videoCityTag.textContent = `${city.name}, ${city.country || ""}`;
+    }
+
+    // Audio ON by default as requested
+    isAudioUnmuted = true;
+    updateAudioButtonUI(true);
+
+    const videoId = (city.youtube && (city.youtube[currentStreetMode] || city.youtube.walking || city.youtube.driving)) || "joPpxvhS2_I";
+
+    if (cityVideoLoadingLabel) {
+        cityVideoLoadingLabel.textContent = `ENTERING ${city.name.toUpperCase()}…`;
+    }
+    if (cityVideoLoading) {
+        cityVideoLoading.hidden = false;
+        cityVideoLoading.classList.remove("is-hidden");
+    }
+
+    loadYouTubeApi().then((YT) => {
+        if (!isModalOpen || !document.getElementById("city-youtube-player")) return;
+
+        const origin = (window.location.protocol.startsWith("http")) ? window.location.origin : undefined;
+        const playerVars = {
+            autoplay: 1,
+            mute: 1, // Start muted under the map for unblocked browser autoplay
+            controls: 0,
+            showinfo: 0,
+            rel: 0,
+            iv_load_policy: 3,
+            modestbranding: 1,
+            disablekb: 1,
+            playsinline: 1,
+            fs: 0,
+            loop: 1,
+            playlist: videoId
+        };
+        if (origin) playerVars.origin = origin;
+
+        try {
+            activeYtPlayer = new YT.Player("city-youtube-player", {
+                videoId: videoId,
+                playerVars: playerVars,
+                events: {
+                    onReady: (event) => {
+                        event.target.playVideo();
+                        if (isAudioUnmuted) {
+                            try {
+                                event.target.unMute();
+                                event.target.setVolume(100);
+                            } catch (e) {}
+                        }
+                    },
+                    onStateChange: (event) => {
+                        if (event.data === YT.PlayerState.PLAYING) {
+                            if (isAudioUnmuted) {
+                                try {
+                                    event.target.unMute();
+                                    event.target.setVolume(100);
+                                } catch (e) {}
+                            }
+                            isYtPlaying = true;
+                            hideVideoLoading();
+                            hidePlayOverlay();
+                        } else if (event.data === YT.PlayerState.ENDED) {
+                            event.target.playVideo();
+                        }
+                    },
+                    onError: (err) => {
+                        console.warn("YouTube player notice:", err);
+                        tryLocalVideoFallback(city);
+                    }
+                }
+            });
+        } catch (e) {
+            console.warn("YT.Player init failed, trying local fallback:", e);
+            tryLocalVideoFallback(city);
+        }
+    }).catch(() => {
+        tryLocalVideoFallback(city);
+    });
+}
+
+function tryLocalVideoFallback(city) {
+    if (!cityVideo || !isModalOpen) return;
+    const videoSrc = city.videoFile || `videos/${(city.name || "").toLowerCase().replace(/\s+/g, "")}.mp4`;
+    cityVideo.src = videoSrc;
+    cityVideo.style.display = "block";
+    cityVideo.muted = !isAudioUnmuted;
+    cityVideo.play().then(() => {
+        hideVideoLoading();
+        hidePlayOverlay();
+    }).catch(() => {
+        showVideoFallback();
+    });
+}
+
+function executeFinalPush(city) {
+    if (isFinalPushTriggered || !isModalOpen) return;
+    isFinalPushTriggered = true;
+
+    if (underMapTimer) {
+        clearTimeout(underMapTimer);
+        underMapTimer = null;
+    }
+    if (finalPushTimer) {
+        clearTimeout(finalPushTimer);
+        finalPushTimer = null;
+    }
+    if (mapFlightTimeout) {
+        clearTimeout(mapFlightTimeout);
+        mapFlightTimeout = null;
+    }
+
+    // Ensure under-map playback was started
+    if (!underMapPreloadStarted) {
+        startUnderMapPlayback(city);
+    }
+
+    if (cityModalSkipBtn) {
+        cityModalSkipBtn.style.display = "none";
+    }
+
+    updateModalStatus("DIVING INTO THE ROAD…");
+
+    // 1. Camera pushes into the ground / road
+    if (activeMap) {
+        try {
+            activeMap.easeTo({
+                pitch: 85, // Camera tilts flat against asphalt
+                zoom: Math.min(19.2, (city.endZoom || 15.5) + 3.2), // Plunges down to the road surface
+                bearing: (city.endBearing || 0) + 14,
+                duration: 1300,
+                easing: (t) => t * t * t // Aggressive acceleration into the ground
+            });
+        } catch (e) {}
+    }
+
+    // 2. Map scales up / blurs / fades, revealing video already playing underneath
+    if (cityModal) {
+        cityModal.classList.add("is-immersive");
+    }
+
+    if (typeof gsap !== "undefined") {
+        gsap.killTweensOf([cityMapStage, cityVideoFrame]);
+
+        gsap.to(cityMapStage, {
+            scale: 2.4,
+            filter: "blur(22px) brightness(1.25)",
+            opacity: 0,
+            duration: 1.25,
+            ease: "power2.inOut",
+            onComplete: () => {
+                // 3. Map is destroyed! Only street video remains!
+                destroyMap();
+                updateModalStatus("YOU'RE HERE.");
+
+                // Unmute audio on reveal by default
+                if (isAudioUnmuted) {
+                    if (activeYtPlayer && typeof activeYtPlayer.unMute === "function") {
+                        try {
+                            activeYtPlayer.unMute();
+                            activeYtPlayer.setVolume(100);
+                        } catch (e) {}
+                    }
+                    if (cityVideo) {
+                        cityVideo.muted = false;
+                    }
+                }
+            }
+        });
+
+        // Full-bleed street video smoothly settles
+        gsap.fromTo(cityVideoFrame,
+            { scale: 1.05 },
+            { scale: 1.0, duration: 1.25, ease: "power2.out" }
+        );
+    } else {
+        destroyMap();
+        updateModalStatus("YOU'RE HERE.");
+        if (isAudioUnmuted) {
+            if (activeYtPlayer && typeof activeYtPlayer.unMute === "function") {
+                try {
+                    activeYtPlayer.unMute();
+                    activeYtPlayer.setVolume(100);
+                } catch (e) {}
+            }
+            if (cityVideo) cityVideo.muted = false;
+        }
+    }
+}
+
+function destroyMap() {
+    if (activeMap) {
+        try {
+            activeMap.remove();
+        } catch (e) {}
+        activeMap = null;
+    }
+    if (cityMapContainer) {
+        cityMapContainer.innerHTML = "";
+    }
+    if (cityMapStage) {
+        cityMapStage.style.display = "none";
+        if (typeof gsap !== "undefined") {
+            gsap.set(cityMapStage, { clearProps: "all" });
+        }
+    }
+}
+
 function showMapError(title, desc) {
     if (cityMapFallback) {
         cityMapFallback.style.display = "flex";
@@ -869,6 +1286,13 @@ function showMapError(title, desc) {
         if (descEl) descEl.textContent = desc;
     }
     updateModalStatus("MAP UNAVAILABLE");
+
+    // Seamlessly transition straight to street view experience
+    window.setTimeout(() => {
+        if (isModalOpen && !isFinalPushTriggered && currentCityData) {
+            executeFinalPush(currentCityData);
+        }
+    }, 1400);
 }
 
 function updateModalStatus(text) {
@@ -882,7 +1306,8 @@ function openCityModal(cityKey) {
     if (!city || isModalOpen) return;
 
     isModalOpen = true;
-    isTransitioningToVideo = false;
+    underMapPreloadStarted = false;
+    isFinalPushTriggered = false;
     currentCityData = city;
     lastFocusedElement = document.activeElement;
 
@@ -915,24 +1340,35 @@ function openCityModal(cityKey) {
 
     updateModalStatus("FINDING THE CITY…");
 
-    // Reset stages
+    // Clean up previous video player
+    destroyYouTubePlayer();
+
+    // Reset stages (Map on top z-index:2, Video underneath z-index:1)
     if (cityMapStage) {
         cityMapStage.style.display = "block";
         cityMapStage.style.opacity = "1";
+        if (typeof gsap !== "undefined") {
+            gsap.set(cityMapStage, { scale: 1, filter: "none", opacity: 1 });
+        }
     }
     if (cityVideoStage) {
-        cityVideoStage.style.display = "none";
-        cityVideoStage.style.opacity = "0";
+        cityVideoStage.style.display = "block";
+        cityVideoStage.style.opacity = "1";
     }
     if (cityMapFallback) cityMapFallback.style.display = "none";
     if (cityVideoPlayOverlay) cityVideoPlayOverlay.style.display = "none";
     if (cityVideoLoading) cityVideoLoading.hidden = true;
     if (cityVideoFallback) cityVideoFallback.hidden = true;
     if (cityModalSkipBtn) cityModalSkipBtn.style.display = "inline-flex";
+
     if (cityVideo) {
-        cityVideo.muted = true;
-        updateAudioButtonUI(false);
+        cityVideo.muted = false;
+        cityVideo.removeAttribute("src");
+        cityVideo.style.display = "none";
     }
+    // Audio ON by default as requested
+    isAudioUnmuted = true;
+    updateAudioButtonUI(true);
 
     // Show modal container
     cityModal.classList.add("is-active");
@@ -994,11 +1430,11 @@ function initCityMap(city) {
         mapboxgl.accessToken = token;
         const style = getMapboxStyle();
 
-        // 1. Camera starts VERY high (stratosphere / ~50 km altitude) looking straight down (pitch 0)
+        // 1. Camera starts high in stratosphere looking straight down (pitch 0)
         const startZoom = 2.0;
-        const targetZoom = city.endZoom || 15.4;
-        const targetPitch = city.endPitch || 62;
-        const targetBearing = city.endBearing || -25;
+        const targetZoom = city.endZoom || 15.6;
+        const targetPitch = city.endPitch || 64;
+        const targetBearing = city.endBearing || 28;
 
         if (cityMapContainer) {
             cityMapContainer.innerHTML = "";
@@ -1019,12 +1455,11 @@ function initCityMap(city) {
         activeMap = map;
 
         let hasFlightStarted = false;
-        let isFlightCompleted = false;
 
         const onMapReady = () => {
             if (!activeMap) return;
 
-            // 1. Vibrant Atmospheric Space Fog & Horizon Glow
+            // Vibrant Atmospheric Space Fog & Horizon Glow
             if (typeof map.setFog === "function") {
                 map.setFog({
                     range: [0.5, 10],
@@ -1036,7 +1471,7 @@ function initCityMap(city) {
                 });
             }
 
-            // 2. Beautiful Palette: Luminous Sapphire Water, Emerald Parks, Glowing Golden Arteries
+            // Beautiful Palette
             try {
                 if (map.getLayer("background")) {
                     map.setPaintProperty("background", "background-color", "#0c111d");
@@ -1070,7 +1505,7 @@ function initCityMap(city) {
                 }
             } catch (err) {}
 
-            // 3. Insert 3D Extruded Buildings Layer with Warm Gold and Architectural Facades
+            // Insert 3D Extruded Buildings Layer
             const currentStyle = map.getStyle();
             if (currentStyle && currentStyle.layers) {
                 let labelLayerId;
@@ -1101,12 +1536,12 @@ function initCityMap(city) {
                                     "interpolate",
                                     ["linear"],
                                     ["get", heightProp],
-                                    0, "#1c2538",     // architectural steel base
-                                    25, "#2b3952",    // illuminated facade
-                                    60, "#485b7e",    // architectural glass
-                                    120, "#c59a48",   // warm bronze
-                                    220, "#dfbd82",   // luminous gold
-                                    340, "#ffe59e"    // penthouse gold beacon
+                                    0, "#1c2538",
+                                    25, "#2b3952",
+                                    60, "#485b7e",
+                                    120, "#c59a48",
+                                    220, "#dfbd82",
+                                    340, "#ffe59e"
                                 ],
                                 "fill-extrusion-height": [
                                     "interpolate",
@@ -1141,19 +1576,33 @@ function initCityMap(city) {
             updateModalStatus("APPROACHING THE CITY…");
             if (hudAltitudeLabel) hudAltitudeLabel.textContent = "HIGH ABOVE THE CITY";
 
-            // 2. Camera smoothly flies down while tilting into 3D perspective (~60° pitch)
-            // Duration ~5.2 seconds (cinematic ~4-6s)
+            // Camera smoothly flies down while tilting into 3D perspective
+            const flightDuration = 4800;
             map.flyTo({
                 center: city.coords,
                 zoom: targetZoom,
                 pitch: targetPitch,
                 bearing: targetBearing,
-                duration: 5200,
+                duration: flightDuration,
                 speed: 0.85,
                 curve: 1.4,
                 essential: true,
                 easing: (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
             });
+
+            // Near the end of the flight (~2.8s in): start loading street video & muted playback under the map
+            underMapTimer = setTimeout(() => {
+                if (isModalOpen && !isFinalPushTriggered) {
+                    startUnderMapPlayback(city);
+                }
+            }, 2800);
+
+            // Final push at 4.6s: camera dives into road, map blurs/fades, video reveals
+            finalPushTimer = setTimeout(() => {
+                if (isModalOpen && !isFinalPushTriggered) {
+                    executeFinalPush(city);
+                }
+            }, 4600);
         };
 
         if (map.isStyleLoaded()) {
@@ -1162,13 +1611,13 @@ function initCityMap(city) {
             map.once("style.load", onMapReady);
         }
 
-        // Live telemetry updater during flight (continuously updates altitude text)
+        // Live telemetry updater during flight
         const updateTelemetry = () => {
             if (!activeMap) return;
             const z = map.getZoom();
             if (hudCameraZoom) hudCameraZoom.textContent = `ZOOM: ${z.toFixed(1)}`;
 
-            // Exponential altitude mapping from 50 km down to city level (250 m)
+            // Altitude descent mapping
             const progress = Math.min(1, Math.max(0, (z - 2.0) / (targetZoom - 2.0)));
             const altKm = 50 * Math.pow(0.005, progress);
 
@@ -1188,8 +1637,13 @@ function initCityMap(city) {
                 altText = `${altKm.toFixed(1)} KM`;
             }
 
-            if (hudAltitudeLabel && !isFlightCompleted) {
+            if (hudAltitudeLabel && !isFinalPushTriggered) {
                 hudAltitudeLabel.textContent = `${phase} (${altText})`;
+            }
+
+            // Fallback trigger if zoom crosses threshold
+            if (z >= 13.8 && !underMapPreloadStarted) {
+                startUnderMapPlayback(city);
             }
         };
 
@@ -1198,18 +1652,8 @@ function initCityMap(city) {
 
         // When 3D camera flight finishes
         map.once("moveend", () => {
-            if (!hasFlightStarted) return;
-            isFlightCompleted = true;
-
-            updateModalStatus("THE SKYLINE SETTLES…");
-            if (hudAltitudeLabel) hudAltitudeLabel.textContent = "CITY LEVEL (GROUND)";
-
-            // Hold on the 3D skyline before transitioning to street video
-            setTimeout(() => {
-                if (!isTransitioningToVideo && isModalOpen) {
-                    transitionToVideo(city);
-                }
-            }, 3200);
+            if (!hasFlightStarted || isFinalPushTriggered) return;
+            executeFinalPush(city);
         });
 
         map.on("error", (e) => {
@@ -1219,121 +1663,16 @@ function initCityMap(city) {
             }
         });
 
-        // Safety fallback timer if moveend takes too long
+        // Safety fallback timer
         mapFlightTimeout = setTimeout(() => {
-            if (!isTransitioningToVideo) {
-                transitionToVideo(city);
+            if (!isFinalPushTriggered) {
+                executeFinalPush(city);
             }
-        }, 9500);
+        }, 8500);
 
     } catch (err) {
         console.error("Map initialization failed:", err);
         showMapError("The map could not open.", err.message || "Failed to load 3D map engine.");
-    }
-}
-
-function transitionToVideo(city) {
-    if (isTransitioningToVideo) return;
-    isTransitioningToVideo = true;
-
-    if (mapFlightTimeout) {
-        clearTimeout(mapFlightTimeout);
-        mapFlightTimeout = null;
-    }
-
-    if (cityModalSkipBtn) {
-        cityModalSkipBtn.style.display = "none";
-    }
-
-    if (cityModal) {
-        cityModal.classList.add("is-immersive");
-    }
-
-    updateModalStatus("ENTERING THE STREET…");
-
-    // GSAP smooth transition from map to video
-    if (typeof gsap !== "undefined") {
-        gsap.killTweensOf([cityMapStage, cityVideoStage]);
-        const tl = gsap.timeline();
-        tl.to(cityMapStage, {
-            opacity: 0,
-            duration: 0.7,
-            ease: "power2.inOut",
-            onComplete: () => {
-                if (cityMapStage) cityMapStage.style.display = "none";
-            }
-        });
-
-        tl.fromTo(cityVideoStage, 
-            { opacity: 0, scale: 1.03 }, 
-            {
-                opacity: 1,
-                scale: 1,
-                duration: 0.7,
-                ease: "power2.out",
-                onStart: () => {
-                    if (cityVideoStage) cityVideoStage.style.display = "block";
-                    startCityVideo(city);
-                }
-            },
-            "-=0.25"
-        );
-    } else {
-        if (cityMapStage) cityMapStage.style.display = "none";
-        if (cityVideoStage) {
-            cityVideoStage.style.display = "block";
-            cityVideoStage.style.opacity = "1";
-        }
-        startCityVideo(city);
-    }
-}
-
-function startCityVideo(city) {
-    if (!cityVideo) return;
-
-    // Update Mode & City tags in HUD
-    const isWalking = (typeof s2SelectedMode !== "undefined" && s2SelectedMode === "walking");
-    if (videoModeBadge) {
-        videoModeBadge.textContent = isWalking ? "WALKING TOUR" : "DRIVING TOUR";
-    }
-    if (videoCityTag) {
-        videoCityTag.textContent = `${city.name}, ${city.country || ""}`;
-    }
-
-    // Determine local MP4 file path
-    const videoSrc = city.videoFile || `videos/${(city.name || "").toLowerCase().replace(/\s+/g, "")}.mp4`;
-
-    if (cityVideoLoadingLabel) {
-        cityVideoLoadingLabel.textContent = `ENTERING ${city.name.toUpperCase()}…`;
-    }
-    if (cityVideoLoading) {
-        cityVideoLoading.hidden = false;
-        cityVideoLoading.classList.remove("is-hidden");
-    }
-    if (cityVideoFallback) cityVideoFallback.hidden = true;
-
-    // Only set src if not already loaded
-    if (cityVideo.getAttribute("src") !== videoSrc) {
-        cityVideo.src = videoSrc;
-        cityVideo.load();
-    }
-
-    // Default to muted so browser allows seamless immediate autoplay
-    cityVideo.muted = true;
-    updateAudioButtonUI(false);
-
-    const playPromise = cityVideo.play();
-    if (playPromise !== undefined) {
-        playPromise.then(() => {
-            hideVideoLoading();
-            hidePlayOverlay();
-            updateModalStatus("YOU'RE HERE.");
-        }).catch((err) => {
-            console.warn("Autoplay blocked by browser policy, showing play overlay:", err);
-            hideVideoLoading();
-            if (cityVideoFallback && !cityVideoFallback.hidden) return;
-            showPlayOverlay();
-        });
     }
 }
 
@@ -1356,56 +1695,6 @@ function showVideoFallback() {
     if (cityVideo) {
         cityVideo.pause();
     }
-}
-
-if (cityVideo) {
-    cityVideo.addEventListener("canplay", hideVideoLoading);
-    cityVideo.addEventListener("playing", () => {
-        hideVideoLoading();
-        hidePlayOverlay();
-        updateModalStatus("YOU'RE HERE.");
-    });
-    cityVideo.addEventListener("error", () => {
-        if (!isModalOpen || !cityVideo.getAttribute("src")) return;
-        showVideoFallback();
-    });
-}
-
-if (cityVideoFallbackBtn) {
-    cityVideoFallbackBtn.addEventListener("click", closeCityModal);
-}
-
-function toggleCityVideoAudio() {
-    if (!cityVideo) return;
-    cityVideo.muted = !cityVideo.muted;
-    updateAudioButtonUI(!cityVideo.muted);
-}
-
-function updateAudioButtonUI(isUnmuted) {
-    if (!cityVideoAudioBtn) return;
-    const mutedIcon = cityVideoAudioBtn.querySelector(".audio-muted-icon");
-    const unmutedIcon = cityVideoAudioBtn.querySelector(".audio-unmuted-icon");
-
-    cityVideoAudioBtn.classList.toggle("is-unmuted", isUnmuted);
-    if (mutedIcon) mutedIcon.style.display = isUnmuted ? "none" : "block";
-    if (unmutedIcon) unmutedIcon.style.display = isUnmuted ? "block" : "none";
-    if (cityVideoAudioLabel) {
-        cityVideoAudioLabel.textContent = isUnmuted ? "MUTE AUDIO" : "UNMUTE AUDIO";
-    }
-}
-
-if (cityVideoAudioBtn) {
-    cityVideoAudioBtn.addEventListener("click", toggleCityVideoAudio);
-}
-
-if (cityVideoBigPlay) {
-    cityVideoBigPlay.addEventListener("click", () => {
-        if (cityVideo) {
-            cityVideo.play().then(() => {
-                hidePlayOverlay();
-            }).catch(() => {});
-        }
-    });
 }
 
 function showPlayOverlay() {
@@ -1433,43 +1722,46 @@ function restoreModalFocus() {
 function closeCityModal() {
     if (!isModalOpen) return;
     isModalOpen = false;
-    isTransitioningToVideo = false;
+    isFinalPushTriggered = false;
+    underMapPreloadStarted = false;
 
+    if (underMapTimer) {
+        clearTimeout(underMapTimer);
+        underMapTimer = null;
+    }
+    if (finalPushTimer) {
+        clearTimeout(finalPushTimer);
+        finalPushTimer = null;
+    }
     if (mapFlightTimeout) {
         clearTimeout(mapFlightTimeout);
         mapFlightTimeout = null;
     }
-    if (autoplayCheckTimer) {
-        clearTimeout(autoplayCheckTimer);
-        autoplayCheckTimer = null;
-    }
 
-    // 1. Pause and reset local video completely (halt sound & free decoding memory)
+    // 1. Destroy YouTube player completely
+    destroyYouTubePlayer();
+
+    // 2. Pause and reset local video completely
     if (cityVideo) {
         cityVideo.pause();
         cityVideo.muted = true;
-        updateAudioButtonUI(false);
         cityVideo.removeAttribute("src");
         cityVideo.load();
+        cityVideo.style.display = "none";
     }
+    isAudioUnmuted = false;
+    updateAudioButtonUI(false);
+
     hidePlayOverlay();
     hideVideoLoading();
     if (cityVideoFallback) cityVideoFallback.hidden = true;
     if (cityModal) cityModal.classList.remove("is-immersive");
     updateModalStatus("FINDING THE CITY…");
 
-    // 2. Destroy Mapbox instance cleanly
-    if (activeMap) {
-        try {
-            activeMap.remove();
-        } catch (e) {}
-        activeMap = null;
-    }
-    if (cityMapContainer) {
-        cityMapContainer.innerHTML = "";
-    }
+    // 3. Destroy Mapbox instance cleanly
+    destroyMap();
 
-    // 3. GSAP Close Animation
+    // 4. GSAP Close Animation
     if (typeof gsap !== "undefined") {
         gsap.killTweensOf([cityModalDialog, cityModalBackdrop]);
         gsap.to(cityModalDialog, {
@@ -1484,36 +1776,20 @@ function closeCityModal() {
             duration: 0.3,
             ease: "power2.in",
             onComplete: () => {
-                cityModal.classList.remove("is-active");
-                cityModal.setAttribute("aria-hidden", "true");
+                if (cityModal) {
+                    cityModal.classList.remove("is-active");
+                    cityModal.setAttribute("aria-hidden", "true");
+                }
                 document.body.classList.remove("city-modal-open");
-
-                // Reset stage states
-                if (cityMapStage) {
-                    cityMapStage.style.display = "block";
-                    cityMapStage.style.opacity = "1";
-                }
-                if (cityVideoStage) {
-                    cityVideoStage.style.display = "none";
-                    cityVideoStage.style.opacity = "0";
-                }
-                hidePlayOverlay();
                 restoreModalFocus();
             }
         });
     } else {
-        cityModal.classList.remove("is-active");
-        cityModal.setAttribute("aria-hidden", "true");
+        if (cityModal) {
+            cityModal.classList.remove("is-active");
+            cityModal.setAttribute("aria-hidden", "true");
+        }
         document.body.classList.remove("city-modal-open");
-        if (cityMapStage) {
-            cityMapStage.style.display = "block";
-            cityMapStage.style.opacity = "1";
-        }
-        if (cityVideoStage) {
-            cityVideoStage.style.display = "none";
-            cityVideoStage.style.opacity = "0";
-        }
-        hidePlayOverlay();
         restoreModalFocus();
     }
 
@@ -1537,7 +1813,7 @@ if (cityModalBackdrop) {
 if (cityModalSkipBtn) {
     cityModalSkipBtn.addEventListener("click", () => {
         if (currentCityData) {
-            transitionToVideo(currentCityData);
+            executeFinalPush(currentCityData);
         }
     });
 }
@@ -1545,7 +1821,7 @@ if (cityModalSkipBtn) {
 if (fallbackActionBtn) {
     fallbackActionBtn.addEventListener("click", () => {
         if (currentCityData) {
-            transitionToVideo(currentCityData);
+            executeFinalPush(currentCityData);
         }
     });
 }
@@ -1568,14 +1844,31 @@ if (fallbackSaveBtn && mapboxTokenInput) {
     });
 }
 
+if (cityVideoAudioBtn) {
+    cityVideoAudioBtn.addEventListener("click", toggleStreetAudio);
+}
+
+if (videoModeBadgeBtn) {
+    videoModeBadgeBtn.addEventListener("click", switchStreetPerspective);
+}
+
+if (cityVideoShield) {
+    cityVideoShield.addEventListener("click", toggleStreetPlayPause);
+}
+
 if (cityVideoBigPlay) {
     cityVideoBigPlay.addEventListener("click", () => {
         hidePlayOverlay();
         if (activeYtPlayer && typeof activeYtPlayer.playVideo === "function") {
             try { activeYtPlayer.playVideo(); } catch (e) {}
+        } else if (cityVideo) {
+            cityVideo.play().catch(() => {});
         }
-        sendIframeCommand("playVideo");
     });
+}
+
+if (cityVideoFallbackBtn) {
+    cityVideoFallbackBtn.addEventListener("click", closeCityModal);
 }
 
 window.addEventListener("message", (e) => {
@@ -1592,6 +1885,17 @@ document.addEventListener("keydown", (e) => {
 
     if (e.key === "Escape") {
         closeCityModal();
+        return;
+    }
+
+    if (e.key === "m" || e.key === "M") {
+        toggleStreetAudio();
+        return;
+    }
+
+    if (e.key === " " && !e.target.matches("input, textarea, button")) {
+        e.preventDefault();
+        toggleStreetPlayPause();
         return;
     }
 
@@ -1619,7 +1923,141 @@ document.addEventListener("keydown", (e) => {
     }
 });
 
-// City Cards Click Handling
+// ==========================================================================
+// CITY CAROUSEL & COMPACT PLACE SELECTOR ENGINE
+// ==========================================================================
+
+function scrollCarouselToCity(cityKey) {
+    const track = document.getElementById("city-carousel-track");
+    const targetCard = document.getElementById(`city-card-${cityKey}`);
+    if (!track || !targetCard) return;
+
+    // Center the target card smoothly within the carousel viewport
+    const trackWidth = track.clientWidth;
+    const cardLeft = targetCard.offsetLeft;
+    const cardWidth = targetCard.offsetWidth;
+    const scrollTarget = cardLeft - (trackWidth / 2) + (cardWidth / 2);
+
+    if (typeof gsap !== "undefined") {
+        gsap.to(track, {
+            scrollLeft: Math.max(0, scrollTarget),
+            duration: 0.45,
+            ease: "power2.out"
+        });
+    } else {
+        track.scrollTo({
+            left: Math.max(0, scrollTarget),
+            behavior: "smooth"
+        });
+    }
+}
+
+function highlightCityCard(cityKey) {
+    const cards = document.querySelectorAll(".s3-city-card");
+    const targetCard = document.getElementById(`city-card-${cityKey}`);
+    if (!targetCard) return;
+
+    cards.forEach((c) => {
+        c.classList.remove("s3-city-selected", "s3-card-focused");
+        c.setAttribute("aria-pressed", "false");
+    });
+
+    targetCard.classList.add("s3-city-selected", "s3-card-focused");
+    targetCard.setAttribute("aria-pressed", "true");
+
+    // Fast, smooth pop feedback (300-400ms)
+    if (typeof gsap !== "undefined") {
+        gsap.fromTo(targetCard,
+            { scale: 0.98 },
+            { scale: 1.03, duration: 0.38, ease: "back.out(1.5)" }
+        );
+    }
+}
+
+function setupCityDropdownSelector() {
+    const dropdown = document.getElementById("city-selector-dropdown");
+    const dropdownBtn = document.getElementById("city-selector-btn");
+    const dropdownMenu = document.getElementById("city-selector-menu");
+    const currentLabel = document.getElementById("selector-current");
+    const options = document.querySelectorAll(".city-option");
+
+    if (!dropdown || !dropdownBtn || !dropdownMenu) return;
+
+    const toggleMenu = (open) => {
+        const isOpen = (typeof open === "boolean") ? open : !dropdownMenu.classList.contains("is-open");
+        dropdownMenu.classList.toggle("is-open", isOpen);
+        dropdownBtn.setAttribute("aria-expanded", String(isOpen));
+    };
+
+    dropdownBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleMenu();
+    });
+
+    options.forEach((opt) => {
+        opt.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const cityKey = opt.getAttribute("data-city");
+            const optName = opt.querySelector(".city-opt-name")?.textContent || cityKey;
+
+            if (currentLabel) {
+                currentLabel.textContent = optName;
+            }
+
+            toggleMenu(false);
+
+            // Fast, intentional jump to city in carousel without auto-opening modal!
+            scrollCarouselToCity(cityKey);
+            highlightCityCard(cityKey);
+        });
+    });
+
+    // Close on click outside
+    document.addEventListener("click", (e) => {
+        if (!dropdown.contains(e.target)) {
+            toggleMenu(false);
+        }
+    });
+
+    // Close on Escape
+    dropdown.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            toggleMenu(false);
+            dropdownBtn.focus();
+        }
+    });
+}
+
+function setupCarouselArrows() {
+    const track = document.getElementById("city-carousel-track");
+    const prevBtn = document.getElementById("carousel-prev");
+    const nextBtn = document.getElementById("carousel-next");
+    if (!track) return;
+
+    if (prevBtn) {
+        prevBtn.addEventListener("click", () => {
+            const step = track.clientWidth * 0.7;
+            if (typeof gsap !== "undefined") {
+                gsap.to(track, { scrollLeft: Math.max(0, track.scrollLeft - step), duration: 0.4, ease: "power2.out" });
+            } else {
+                track.scrollBy({ left: -step, behavior: "smooth" });
+            }
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener("click", () => {
+            const step = track.clientWidth * 0.7;
+            if (typeof gsap !== "undefined") {
+                gsap.to(track, { scrollLeft: track.scrollLeft + step, duration: 0.4, ease: "power2.out" });
+            } else {
+                track.scrollBy({ left: step, behavior: "smooth" });
+            }
+        });
+    }
+}
+
+// City Cards Click Handling (User confirms with ENTER on the card)
 const s3CityCards = document.querySelectorAll(".s3-city-card");
 
 s3CityCards.forEach((card) => {
@@ -1627,20 +2065,29 @@ s3CityCards.forEach((card) => {
         e.preventDefault();
 
         s3CityCards.forEach((item) => {
-            item.classList.remove("s3-city-selected");
+            item.classList.remove("s3-city-selected", "s3-card-focused");
             item.setAttribute("aria-pressed", "false");
         });
 
-        card.classList.add("s3-city-selected");
+        card.classList.add("s3-city-selected", "s3-card-focused");
         card.setAttribute("aria-pressed", "true");
 
         // Read selected city key from data-city
         const rawCity = card.getAttribute("data-city") || "";
         const cityKey = rawCity.toLowerCase().replace(/\s+/g, "");
 
+        // Sync dropdown label
+        const currentLabel = document.getElementById("selector-current");
+        if (currentLabel) {
+            currentLabel.textContent = rawCity;
+        }
+
         openCityModal(cityKey);
     });
 });
+
+setupCityDropdownSelector();
+setupCarouselArrows();
 
 // Auto-open city modal if requested via URL param (e.g. ?openCity=paris)
 const searchParams = new URLSearchParams(window.location.search);
@@ -1943,4 +2390,145 @@ if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initSmoothTrailingCursor);
 } else {
     initSmoothTrailingCursor();
+}
+
+
+function setupCityDropdownSelector() {
+    const input = document.getElementById("city-search-input");
+    const results = document.getElementById("city-search-results");
+    const clearBtn = document.getElementById("city-search-clear");
+    const wrapper = document.getElementById("city-search-wrapper");
+
+    if (!input || !results || !clearBtn || !wrapper) return;
+
+    // Build suggestions from the actual city cards already on the page.
+    const cities = Array.from(document.querySelectorAll(".s3-city-card"))
+        .map((card) => {
+            const cityKey = (card.getAttribute("data-city") || "")
+                .toLowerCase()
+                .replace(/\s+/g, "");
+
+            const cityName =
+                card.querySelector(".s3-city-name")?.textContent.trim() || "";
+
+            const countryMap = {
+                tokyo: "Japan",
+                paris: "France",
+                newyork: "United States",
+                istanbul: "Turkey",
+                mumbai: "India",
+                lisbon: "Portugal",
+                seoul: "South Korea",
+                cairo: "Egypt"
+            };
+
+            return {
+                key: cityKey,
+                name: cityName,
+                country: countryMap[cityKey] || ""
+            };
+        })
+        .filter((city) => city.key && city.name);
+
+    function closeResults() {
+        results.hidden = true;
+        input.setAttribute("aria-expanded", "false");
+    }
+
+    function selectCity(city) {
+        input.value = city.name;
+        clearBtn.hidden = false;
+        closeResults();
+
+        // Reuse the existing carousel navigation and selection behavior.
+        scrollCarouselToCity(city.key);
+        highlightCityCard(city.key);
+    }
+
+    function renderResults(query) {
+        results.replaceChildren();
+
+        const normalizedQuery = query.trim().toLowerCase();
+
+        // Never display the complete city list when the search is empty.
+        if (!normalizedQuery) {
+            closeResults();
+            return;
+        }
+
+        const matches = cities.filter((city) =>
+            city.name.toLowerCase().includes(normalizedQuery) ||
+            city.country.toLowerCase().includes(normalizedQuery)
+        );
+
+        if (matches.length === 0) {
+            const emptyMessage = document.createElement("div");
+            emptyMessage.className = "city-search-empty";
+            emptyMessage.textContent = "No cities found.";
+            results.appendChild(emptyMessage);
+        } else {
+            matches.forEach((city) => {
+                const option = document.createElement("button");
+                option.type = "button";
+                option.className = "city-search-result";
+                option.setAttribute("role", "option");
+
+                const name = document.createElement("span");
+                name.className = "city-search-result-name";
+                name.textContent = city.name;
+
+                const country = document.createElement("span");
+                country.className = "city-search-result-country";
+                country.textContent = city.country;
+
+                option.append(name, country);
+
+                option.addEventListener("click", () => {
+                    selectCity(city);
+                });
+
+                results.appendChild(option);
+            });
+        }
+
+        results.hidden = false;
+        input.setAttribute("aria-expanded", "true");
+    }
+
+    input.addEventListener("input", () => {
+        clearBtn.hidden = input.value.length === 0;
+        renderResults(input.value);
+    });
+
+    input.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            closeResults();
+            return;
+        }
+
+        if (event.key === "Enter" && !results.hidden) {
+            event.preventDefault();
+
+            const firstResult = results.querySelector(".city-search-result");
+            if (firstResult) firstResult.click();
+        }
+
+        if (event.key === "ArrowDown" && !results.hidden) {
+            event.preventDefault();
+            results.querySelector(".city-search-result")?.focus();
+        }
+    });
+
+    clearBtn.addEventListener("click", () => {
+        input.value = "";
+        clearBtn.hidden = true;
+        closeResults();
+        input.focus();
+    });
+
+    document.addEventListener("click", (event) => {
+        if (!wrapper.contains(event.target)) {
+            closeResults();
+        }
+    });
 }

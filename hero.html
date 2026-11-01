@@ -13,7 +13,7 @@
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap"
     rel="stylesheet">
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=roads_v4">
 </head>
 
 <body>
@@ -27,11 +27,11 @@
           <span>ROADS UNTAKEN</span>
         </a>
         <nav class="s2-nav">
-          <a href="#">EXPLORE</a>
-          <a href="#">MAP</a>
-          <a href="#">STORIES</a>
-          <a href="#">ABOUT</a>
-          <a href="#" class="s2-signin">
+          <a href="#next-section">EXPLORE</a>
+          <a href="#cities">MAP</a>
+          <a href="#cities">STORIES</a>
+          <a href="#cities">ABOUT</a>
+          <a href="#cities" class="s2-signin">
             ♙ SIGN IN
           </a>
         </nav>
@@ -290,68 +290,174 @@
 
       <div class="s3-content">
 
-        <div class="s3-intro">
-          <h2>Choose your city.</h2>
-          <p>These Roads awaits beyond the streets you know.</p>
+        <div class="s3-intro-row">
+          <div class="s3-intro-left">
+            <h2>Choose your city.</h2>
+            <p>These roads await beyond the streets you know.</p>
+          </div>
+
+          <div class="s3-intro-right">
+            <!-- Compact Premium Dark Glass Dropdown Selector with Current City Display -->
+            <div class="city-selector-group">
+              <div class="city-selector-dropdown" id="city-selector-dropdown">
+                <button type="button" class="city-selector-btn" id="city-selector-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Find a place">
+                  <span class="selector-icon">◎</span>
+                  <span class="selector-current" id="selector-current">Choose a place</span>
+                  <span class="selector-arrow" aria-hidden="true">▾</span>
+                </button>
+                
+                <div class="city-selector-menu" id="city-selector-menu" role="listbox" aria-label="Cities list">
+                  <button type="button" class="city-option" data-city="tokyo" role="option">
+                    <span class="city-opt-name">Tokyo</span>
+                    <span class="city-opt-country">Japan</span>
+                  </button>
+                  <button type="button" class="city-option" data-city="paris" role="option">
+                    <span class="city-opt-name">Paris</span>
+                    <span class="city-opt-country">France</span>
+                  </button>
+                  <button type="button" class="city-option" data-city="newyork" role="option">
+                    <span class="city-opt-name">New York</span>
+                    <span class="city-opt-country">United States</span>
+                  </button>
+                  <button type="button" class="city-option" data-city="istanbul" role="option">
+                    <span class="city-opt-name">Istanbul</span>
+                    <span class="city-opt-country">Turkey</span>
+                  </button>
+                  <button type="button" class="city-option" data-city="mumbai" role="option">
+                    <span class="city-opt-name">Mumbai</span>
+                    <span class="city-opt-country">India</span>
+                  </button>
+                  <button type="button" class="city-option" data-city="lisbon" role="option">
+                    <span class="city-opt-name">Lisbon</span>
+                    <span class="city-opt-country">Portugal</span>
+                  </button>
+                  <button type="button" class="city-option" data-city="seoul" role="option">
+                    <span class="city-opt-name">Seoul</span>
+                    <span class="city-opt-country">South Korea</span>
+                  </button>
+                  <button type="button" class="city-option" data-city="cairo" role="option">
+                    <span class="city-opt-name">Cairo</span>
+                    <span class="city-opt-country">Egypt</span>
+                  </button>
+                </div>
+              </div>
+              <span class="city-active-tag" id="city-active-tag">Tokyo</span>
+            </div>
+          </div>
         </div>
 
-        <div class="s3-city-grid">
+        <div class="s3-city-carousel-wrap">
+          <div class="s3-city-grid" id="city-carousel-track">
 
-          <button type="button" class="s3-city-card" data-city="Tokyo" aria-pressed="false" data-cursor="Tokyo">
-            <span class="s3-city-image s3-image-tokyo"></span>
-            <span class="s3-city-copy">
-              <span class="s3-city-name">Tokyo</span>
-              <span class="s3-city-enter">
-                ENTER
-                <span class="s3-enter-arrow">→</span>
+            <button type="button" class="s3-city-card" data-city="Tokyo" id="city-card-tokyo" aria-pressed="false" data-cursor="Tokyo">
+              <span class="s3-city-image s3-image-tokyo"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">Tokyo</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
               </span>
-            </span>
-          </button>
+            </button>
 
-          <button type="button" class="s3-city-card" data-city="Paris" aria-pressed="false" data-cursor="Paris">
-            <span class="s3-city-image s3-image-paris"></span>
-            <span class="s3-city-copy">
-              <span class="s3-city-name">Paris</span>
-              <span class="s3-city-enter">
-                ENTER
-                <span class="s3-enter-arrow">→</span>
+            <button type="button" class="s3-city-card" data-city="Paris" id="city-card-paris" aria-pressed="false" data-cursor="Paris">
+              <span class="s3-city-image s3-image-paris"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">Paris</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
               </span>
-            </span>
-          </button>
+            </button>
 
-          <button type="button" class="s3-city-card" data-city="New York" aria-pressed="false" data-cursor="New York">
-            <span class="s3-city-image s3-image-newyork"></span>
-            <span class="s3-city-copy">
-              <span class="s3-city-name">New York</span>
-              <span class="s3-city-enter">
-                ENTER
-                <span class="s3-enter-arrow">→</span>
+            <button type="button" class="s3-city-card" data-city="New York" id="city-card-newyork" aria-pressed="false" data-cursor="New York">
+              <span class="s3-city-image s3-image-newyork"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">New York</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
               </span>
-            </span>
-          </button>
+            </button>
 
-          <button type="button" class="s3-city-card" data-city="Istanbul" aria-pressed="false" data-cursor="Istanbul">
-            <span class="s3-city-image s3-image-istanbul"></span>
-            <span class="s3-city-copy">
-              <span class="s3-city-name">Istanbul</span>
-              <span class="s3-city-enter">
-                ENTER
-                <span class="s3-enter-arrow">→</span>
+            <button type="button" class="s3-city-card" data-city="Istanbul" id="city-card-istanbul" aria-pressed="false" data-cursor="Istanbul">
+              <span class="s3-city-image s3-image-istanbul"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">Istanbul</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
               </span>
-            </span>
-          </button>
+            </button>
 
-          <button type="button" class="s3-city-card" data-city="Mumbai" aria-pressed="false" data-cursor="Mumbai">
-            <span class="s3-city-image s3-image-mumbai"></span>
-            <span class="s3-city-copy">
-              <span class="s3-city-name">Mumbai</span>
-              <span class="s3-city-enter">
-                ENTER
-                <span class="s3-enter-arrow">→</span>
+            <button type="button" class="s3-city-card" data-city="Mumbai" id="city-card-mumbai" aria-pressed="false" data-cursor="Mumbai">
+              <span class="s3-city-image s3-image-mumbai"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">Mumbai</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
               </span>
-            </span>
-          </button>
+            </button>
 
+            <button type="button" class="s3-city-card" data-city="Lisbon" id="city-card-lisbon" aria-pressed="false" data-cursor="Lisbon">
+              <span class="s3-city-image s3-image-lisbon"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">Lisbon</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
+              </span>
+            </button>
+
+            <button type="button" class="s3-city-card" data-city="Seoul" id="city-card-seoul" aria-pressed="false" data-cursor="Seoul">
+              <span class="s3-city-image s3-image-seoul"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">Seoul</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
+              </span>
+            </button>
+
+            <button type="button" class="s3-city-card" data-city="Cairo" id="city-card-cairo" aria-pressed="false" data-cursor="Cairo">
+              <span class="s3-city-image s3-image-cairo"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">Cairo</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
+              </span>
+            </button>
+
+          </div>
+
+          <div class="carousel-nav-arrows">
+            <button type="button" class="carousel-nav-btn prev" id="carousel-prev" aria-label="Previous cities">‹</button>
+            <button type="button" class="carousel-nav-btn next" id="carousel-next" aria-label="Next cities">›</button>
+          </div>
+
+          <!-- Interactive Carousel Pagination Dots (All 8 Cities) -->
+          <div class="carousel-pagination-row">
+            <div class="carousel-dots" id="carousel-dots" role="tablist" aria-label="Choose city">
+              <button type="button" class="carousel-dot is-active" data-city="tokyo" aria-label="Tokyo" title="Tokyo"></button>
+              <button type="button" class="carousel-dot" data-city="paris" aria-label="Paris" title="Paris"></button>
+              <button type="button" class="carousel-dot" data-city="newyork" aria-label="New York" title="New York"></button>
+              <button type="button" class="carousel-dot" data-city="istanbul" aria-label="Istanbul" title="Istanbul"></button>
+              <button type="button" class="carousel-dot" data-city="mumbai" aria-label="Mumbai" title="Mumbai"></button>
+              <button type="button" class="carousel-dot" data-city="lisbon" aria-label="Lisbon" title="Lisbon"></button>
+              <button type="button" class="carousel-dot" data-city="seoul" aria-label="Seoul" title="Seoul"></button>
+              <button type="button" class="carousel-dot" data-city="cairo" aria-label="Cairo" title="Cairo"></button>
+            </div>
+            <span class="carousel-counter" id="carousel-counter">01 / 08 • TOKYO</span>
+          </div>
         </div>
 
       </div>
@@ -468,7 +574,7 @@
       </header>
 
       <!-- Main Stage -->
-      <div class="city-modal-stage">
+      <div class="city-modal-stage" id="city-modal-stage">
         <!-- Map Stage -->
         <div class="city-modal-map-stage" id="city-modal-map-stage">
           <div id="city-mapbox-container" class="city-mapbox-container"></div>
@@ -507,60 +613,49 @@
           </div>
         </div>
 
-        <!-- Video Stage (driveandlisten full-bleed HTML5 immersion) -->
-        <div class="city-modal-video-stage" id="city-modal-video-stage" style="display: none; opacity: 0;">
+        <!-- Video Stage (Full-bleed immersion, Zero-chrome YouTube & local playback) -->
+        <div class="city-modal-video-stage" id="city-modal-video-stage">
           <div class="city-video-frame" id="city-video-frame">
-            <video id="city-video" class="city-video" muted autoplay loop playsinline preload="metadata"></video>
+            <!-- Zero-Chrome YouTube Player Wrap (scaled & cropped to remove all player UI, title bar, & branding) -->
+            <div class="city-youtube-wrap" id="city-youtube-wrap">
+              <div id="city-youtube-player"></div>
+            </div>
+            <!-- Local HTML5 Video (optional fallback) -->
+            <video id="city-video" class="city-video" muted autoplay loop playsinline preload="metadata" style="display: none;"></video>
+            <!-- Interaction shield to capture clicks and suppress YouTube native hover UI -->
+            <div class="city-video-shield" id="city-video-shield" title="Street View Experience"></div>
           </div>
 
-          <div class="city-video-loading" id="city-video-loading">
-            <span class="city-video-loading-label" id="city-video-loading-label">ENTERING THE CITY…</span>
-            <span class="city-video-loading-line"></span>
-          </div>
-
-          <div class="city-video-fallback" id="city-video-fallback" hidden>
-            <span class="city-video-fallback-badge">STREET VIEW UNAVAILABLE</span>
-            <p>This street is quiet right now.</p>
-            <button type="button" class="city-video-fallback-btn" id="city-video-fallback-btn">Back to cities</button>
-          </div>
-
-          <!-- Custom Drive & Listen Minimal Controls HUD -->
+          <!-- Custom Minimal Controls HUD -->
           <div class="city-video-controls-overlay">
             <button type="button" class="city-video-audio-toggle" id="city-video-audio-btn"
-              aria-label="Toggle Street Sound" title="Toggle Audio">
-              <svg class="audio-icon audio-muted-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              aria-label="Toggle Street Sound" title="Toggle Audio (Press M)">
+              <svg class="audio-icon audio-muted-icon" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="2">
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                 <line x1="23" y1="9" x2="17" y2="15"></line>
                 <line x1="17" y1="9" x2="23" y2="15"></line>
               </svg>
-              <svg class="audio-icon audio-unmuted-icon" style="display: none;" viewBox="0 0 24 24" fill="none"
+              <svg class="audio-icon audio-unmuted-icon" style="display: block;" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2">
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                 <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
               </svg>
-              <span id="city-video-audio-label">UNMUTE AUDIO</span>
-            </button>
-          </div>
-
-          <!-- Fallback / blocked autoplay button -->
-          <div class="city-video-play-overlay" id="city-video-play-overlay" style="display: none;">
-            <button type="button" class="city-video-big-play" id="city-video-big-play" aria-label="Play street tour">
-              <svg class="play-svg-icon" viewBox="0 0 24 24" fill="currentColor">
-                <polygon points="6 4 20 12 6 20 6 4"></polygon>
-              </svg>
-              <span>ENTER STREET TOUR</span>
+              <span id="city-video-audio-label">MUTE AUDIO</span>
             </button>
           </div>
 
           <!-- Video Footer HUD -->
-          <div class="city-video-footer-bar">
+          <div class="city-video-footer-bar" id="city-video-footer-bar">
             <div class="video-footer-left">
-              <span class="video-badge" id="video-mode-badge">STREET VIEW</span>
+              <button type="button" class="video-mode-badge-btn" id="video-mode-badge-btn" title="Click to toggle perspective">
+                <span class="video-badge" id="video-mode-badge">WALKING TOUR</span>
+                <span class="video-mode-switch-hint">⇄ SWITCH</span>
+              </button>
               <span class="video-city-tag" id="video-city-tag">Tokyo, Japan</span>
             </div>
             <div class="video-footer-right">
-              <span class="video-tip">DRIVE & LISTEN • STREET LEVEL</span>
+              <span class="video-tip">ROADS UNTAKEN • STREET IMMERSION</span>
             </div>
           </div>
         </div>
@@ -579,7 +674,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
-  <script src="script.js"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="script.js?v=roads_v4"></script>
 </body>
 
 </html>

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roads Untaken — A Journey Through the Details</title>
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="apple-touch-icon" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=roads_v4">
+</head>
+
+<body>
+  <div class="opening">
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-spotlight" aria-hidden="true"></div>
+      <header class="s2-header hero-header">
+        <a href="#" class="s2-logo">
+          <img src="logo.png" alt="Roads Untaken" class="logo-img">
+          <span>ROADS UNTAKEN</span>
+        </a>
+        <nav class="s2-nav">
+          <a href="#next-section">EXPLORE</a>
+          <a href="#cities">MAP</a>
+          <a href="#cities">STORIES</a>
+          <a href="#cities">ABOUT</a>
+          <a href="#cities" class="s2-signin">
+            ♙ SIGN IN
+          </a>
+        </nav>
+      </header>
+      <div class="hero-content">
+        <h1>
+          <span>ROADS</span>
+          <span>UNTAKEN</span>
+        </h1>
+        <p class="tagline">Step into real streets through your screen</p>
+        <a href="#scroll-one" class="explore-link" id="explore-btn">
+          Enter the world →
+        </a>
+      </div>
+      <a href="#scroll-one" class="hero-scroll-cue" id="hero-scroll-cue" aria-label="Scroll to explore">
+        <span class="hero-scroll-line" aria-hidden="true"></span>
+        <span>SCROLL</span>
+        <span class="hero-scroll-arrow" aria-hidden="true">↓</span>
+      </a>
+    </section>
+
+    <section class="scroll-one" id="scroll-one">
+      <div class="scroll-one-bg"></div>
+      <div class="scroll-one-overlay"></div>
+
+      <header class="s2-header scroll-two-header">
+        <a href="#" class="s2-logo">
+          <img src="logo.png" alt="Roads Untaken" class="logo-img">
+          <span>ROADS UNTAKEN</span>
+        </a>
+        <nav class="s2-nav">
+          <a href="#next-section" class="s2-nav-active">EXPLORE</a>
+          <a href="#next-section">MAP</a>
+          <a href="#next-section">STORIES</a>
+          <a href="#next-section">ABOUT</a>
+          <a href="#next-section" class="s2-signin">
+            ♙ SIGN IN
+          </a>
+        </nav>
+      </header>
+
+      <div class="scroll-layout">
+        <nav class="story-nav" aria-label="Journey Stages">
+          <a href="#notice" class="story-step active" data-step="notice">
+            <span class="step-dot"></span>
+            <span class="step-copy">
+              <span class="step-number">01</span>
+              <span class="step-label">NOTICE</span>
+            </span>
+          </a>
+          <a href="#next-section" class="story-step" data-step="explore">
+            <span class="step-dot"></span>
+            <span class="step-copy">
+              <span class="step-number">02</span>
+              <span class="step-label">EXPLORE</span>
+            </span>
+          </a>
+          <a href="#cities" class="story-step" data-step="feel">
+            <span class="step-dot"></span>
+            <span class="step-copy">
+              <span class="step-number">03</span>
+              <span class="step-label">FEEL</span>
+            </span>
+          </a>
+        </nav>
+
+        <main class="story-copy" id="notice">
+          <p class="story-eyebrow">A JOURNEY THROUGH THE DETAILS</p>
+          <h1>These roads are real.</h1>
+          <p class="story-subtitle">Every turn holds a story</p>
+          <p class="story-description">Follow the little things that catch your eye.</p>
+        </main>
+
+        <aside class="detail-card">
+          <div class="card-heading">
+            <span class="lantern-icon">♧</span>
+            <span>A DETAIL WORTH FINDING</span>
+          </div>
+          <div class="detail-image"></div>
+          <p class="detail-text">A single lamp burns above a doorway most evenings.</p>
+          <p class="detail-text">Look up. It has been on all night.</p>
+          <a href="#next-section" class="reveal-button" id="reveal-detail">
+            <span class="reveal-label">CONTINUE THE JOURNEY</span>
+            <span class="reveal-arrow">→</span>
+          </a>
+        </aside>
+      </div>
+
+      <footer class="scroll-footer">
+        <div class="location-pill">
+          <div class="footer-info">
+            <span class="footer-icon">◷</span>
+            <span id="local-clock">21:42</span>
+            <small>Local Time</small>
+          </div>
+        </div>
+
+        <a href="#next-section" class="scroll-cue">
+          <span>SCROLL TO EXPLORE</span>
+          <span class="scroll-chevron">⌄</span>
+        </a>
+
+        <div class="sound-pill">
+          <button type="button" class="s2-sound-control" id="sound-toggle" aria-pressed="false">
+            <span class="s2-sound-icon">♫</span>
+            <span class="s2-sound-label" id="sound-label">AMBIENT SOUND OFF</span>
+
+            <span class="s2-switch">
+              <span class="s2-switch-knob"></span>
+            </span>
+          </button>
+        </div>
+      </footer>
+    </section>
+
+    <section class="scroll-two" id="next-section">
+
+      <div class="scroll-two-bg"></div>
+      <div class="scroll-two-overlay"></div>
+
+      <header class="s2-header">
+
+        <a href="#" class="s2-logo">
+          <img src="logo.png" alt="Roads Untaken" class="logo-img">
+          <span>ROADS UNTAKEN</span>
+        </a>
+
+        <nav class="s2-nav">
+          <a href="#next-section" class="s2-nav-active">EXPLORE</a>
+          <a href="#next-section">MAP</a>
+          <a href="#next-section">STORIES</a>
+          <a href="#next-section">ABOUT</a>
+          <a href="#next-section" class="s2-signin">
+            ♙ SIGN IN
+          </a>
+        </nav>
+
+      </header>
+
+      <div class="s2-main">
+
+        <div class="s2-intro">
+
+          <span class="s2-eyebrow">YOUR CITY. YOUR JOURNEY.</span>
+
+          <h2>
+            Move the way<br>
+            you <em>want.</em>
+          </h2>
+
+          <div class="s2-gold-line"></div>
+
+          <p>
+            Drive the long avenues or<br>
+            walk the quiet corners.
+          </p>
+
+        </div>
+
+        <div class="s2-panel">
+
+          <h3 class="s2-panel-title">CHOOSE YOUR MODE</h3>
+
+          <div class="s2-panel-line"></div>
+
+          <div class="s2-mode-grid">
+
+            <button type="button" class="s2-mode-card" data-mode="driving" aria-pressed="false">
+
+              <div class="s2-mode-image s2-driving-image"></div>
+
+              <div class="s2-mode-info">
+                <h4>DRIVING</h4>
+
+                <p>
+                  Cover more ground.<br>
+                  Follow the city's rhythm.
+                </p>
+              </div>
+
+            </button>
+
+            <button type="button" class="s2-mode-card s2-mode-selected" data-mode="walking" aria-pressed="true">
+
+              <div class="s2-mode-image s2-walking-image"></div>
+
+              <div class="s2-mode-info">
+                <h4>WALKING</h4>
+
+                <p>
+                  Take the quiet corners.<br>
+                  Notice what others miss.
+                </p>
+              </div>
+
+            </button>
+
+          </div>
+
+          <button type="button" class="s2-start-button">
+            <span class="s2-button-label">WALK THE CITY</span>
+            <span class="s2-button-arrow">→</span>
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="s2-location-pill">
+
+        <span class="s2-clock-icon">◷</span>
+
+        <div class="s2-time-block">
+          <span id="s2-local-clock">21:42</span>
+          <small>LOCAL TIME</small>
+        </div>
+
+      </div>
+
+      <button type="button" class="s2-sound-control" id="s2-sound-toggle" aria-pressed="false">
+
+        <span class="s2-sound-icon">♫</span>
+        <span class="s2-sound-label" id="s2-sound-label">AMBIENT SOUND OFF</span>
+
+        <span class="s2-switch">
+          <span class="s2-switch-knob"></span>
+        </span>
+
+      </button>
+
+    </section>
+
+    <section class="scroll-three" id="cities">
+
+      <div class="scroll-three-bg"></div>
+      <div class="scroll-three-overlay"></div>
+
+      <header class="s2-header s3-header">
+
+        <a href="#" class="s2-logo">
+          <img src="logo.png" alt="Roads Untaken" class="logo-img">
+          <span>ROADS UNTAKEN</span>
+        </a>
+
+        <nav class="s2-nav">
+          <a href="#cities" class="s2-nav-active">EXPLORE</a>
+          <a href="#cities">MAP</a>
+          <a href="#cities">STORIES</a>
+          <a href="#cities">ABOUT</a>
+          <a href="#cities" class="s2-signin">
+            ♙ SIGN IN
+          </a>
+        </nav>
+
+      </header>
+
+      <div class="s3-content">
+
+        <div class="s3-intro-row">
+          <div class="s3-intro-left">
+            <h2>Choose your city.</h2>
+            <p>These roads await beyond the streets you know.</p>
+          </div>
+
+          <div class="s3-inro-right">
+            <div class="city-selector-group">
+              <div class="city-search-wrapper" id="city-search-wrapper">
+                <span class="city-search-icon" aria-hidden="true">⌕</span>
+                <input type="text" id="city-search-input" class="city-search-input" placeholder="Search a city..." autocomplete="off" aria-label="search available cities" aria-autocomplete="list" aria-controls="city-search-results" aria-expanded="false">
+                <button type="button" class="city-search-clear" aria-label="Clear-search" hidden>×</button>
+                <div class="city-search-results"  id="city-search-results" role="listbox"  aria-label="Matching cities" hidden></div>
+              </div>
+              <span class="city-active-tag" id="city-active-tag">Tokyo</span>
+            </div>
+          </div>
+            
+        </div>
+
+        <div class="s3-city-carousel-wrap">
+          <div class="s3-city-grid" id="city-carousel-track">
+
+            <button type="button" class="s3-city-card" data-city="Tokyo" id="city-card-tokyo" aria-pressed="false" data-cursor="Tokyo">
+              <span class="s3-city-image s3-image-tokyo"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">Tokyo</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
+              </span>
+            </button>
+
+            <button type="button" class="s3-city-card" data-city="Paris" id="city-card-paris" aria-pressed="false" data-cursor="Paris">
+              <span class="s3-city-image s3-image-paris"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">Paris</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
+              </span>
+            </button>
+
+            <button type="button" class="s3-city-card" data-city="New York" id="city-card-newyork" aria-pressed="false" data-cursor="New York">
+              <span class="s3-city-image s3-image-newyork"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">New York</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
+              </span>
+            </button>
+
+            <button type="button" class="s3-city-card" data-city="Istanbul" id="city-card-istanbul" aria-pressed="false" data-cursor="Istanbul">
+              <span class="s3-city-image s3-image-istanbul"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">Istanbul</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
+              </span>
+            </button>
+
+            <button type="button" class="s3-city-card" data-city="Mumbai" id="city-card-mumbai" aria-pressed="false" data-cursor="Mumbai">
+              <span class="s3-city-image s3-image-mumbai"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">Mumbai</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
+              </span>
+            </button>
+
+            <button type="button" class="s3-city-card" data-city="Lisbon" id="city-card-lisbon" aria-pressed="false" data-cursor="Lisbon">
+              <span class="s3-city-image s3-image-lisbon"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">Lisbon</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
+              </span>
+            </button>
+
+            <button type="button" class="s3-city-card" data-city="Seoul" id="city-card-seoul" aria-pressed="false" data-cursor="Seoul">
+              <span class="s3-city-image s3-image-seoul"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">Seoul</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
+              </span>
+            </button>
+
+            <button type="button" class="s3-city-card" data-city="Cairo" id="city-card-cairo" aria-pressed="false" data-cursor="Cairo">
+              <span class="s3-city-image s3-image-cairo"></span>
+              <span class="s3-city-copy">
+                <span class="s3-city-name">Cairo</span>
+                <span class="s3-city-enter">
+                  ENTER
+                  <span class="s3-enter-arrow">→</span>
+                </span>
+              </span>
+            </button>
+
+          </div>
+
+          <div class="carousel-nav-arrows">
+            <button type="button" class="carousel-nav-btn prev" id="carousel-prev" aria-label="Previous cities">‹</button>
+            <button type="button" class="carousel-nav-btn next" id="carousel-next" aria-label="Next cities">›</button>
+          </div>
+
+          <!-- Interactive Carousel Pagination Dots (All 8 Cities) -->
+          <div class="carousel-pagination-row">
+            <div class="carousel-dots" id="carousel-dots" role="tablist" aria-label="Choose city">
+              <button type="button" class="carousel-dot is-active" data-city="tokyo" aria-label="Tokyo" title="Tokyo"></button>
+              <button type="button" class="carousel-dot" data-city="paris" aria-label="Paris" title="Paris"></button>
+              <button type="button" class="carousel-dot" data-city="newyork" aria-label="New York" title="New York"></button>
+              <button type="button" class="carousel-dot" data-city="istanbul" aria-label="Istanbul" title="Istanbul"></button>
+              <button type="button" class="carousel-dot" data-city="mumbai" aria-label="Mumbai" title="Mumbai"></button>
+              <button type="button" class="carousel-dot" data-city="lisbon" aria-label="Lisbon" title="Lisbon"></button>
+              <button type="button" class="carousel-dot" data-city="seoul" aria-label="Seoul" title="Seoul"></button>
+              <button type="button" class="carousel-dot" data-city="cairo" aria-label="Cairo" title="Cairo"></button>
+            </div>
+            <span class="carousel-counter" id="carousel-counter">01 / 08 • TOKYO</span>
+          </div>
+        </div>
+
+      </div>
+
+      <footer class="s3-footer">
+
+        <div class="s3-location-pill">
+
+          <span class="s2-clock-icon">◷</span>
+
+          <div class="s2-time-block">
+            <span id="s3-local-clock">21:42</span>
+            <small>LOCAL TIME</small>
+          </div>
+
+        </div>
+
+        <div class="s3-tagline">A JOURNEY THROUGH THE DETAILS</div>
+
+        <div class="s3-footer-right">
+
+          <span class="s3-global">
+            <span class="s3-globe">◎</span>
+            GLOBAL
+          </span>
+
+          <button type="button" class="s2-sound-control s3-sound-control" id="s3-sound-toggle" aria-pressed="false">
+
+            <span class="s2-sound-icon">♫</span>
+            <span class="s2-sound-label" id="s3-sound-label">AMBIENT SOUND OFF</span>
+
+            <span class="s2-switch">
+              <span class="s2-switch-knob"></span>
+            </span>
+
+          </button>
+
+        </div>
+
+      </footer>
+
+    </section>
+
+
+    <aside class="s2-journey opening-journey" aria-label="Journey stages">
+
+      <div class="s2-journey-step s2-current-step" data-journey-step="notice">
+        <span class="s2-step-dot"></span>
+        <div>
+          <span class="s2-step-number">01</span>
+          <p>NOTICE</p>
+        </div>
+      </div>
+
+      <div class="s2-journey-step" data-journey-step="explore">
+        <span class="s2-step-dot"></span>
+        <div>
+          <span class="s2-step-number">02</span>
+          <p>EXPLORE</p>
+        </div>
+      </div>
+
+      <div class="s2-journey-step" data-journey-step="feel">
+        <span class="s2-step-dot"></span>
+        <div>
+          <span class="s2-step-number">03</span>
+          <p>FEEL</p>
+        </div>
+      </div>
+
+      <span class="s2-gold-marker" aria-hidden="true"></span>
+
+    </aside>
+
+  </div>
+
+  <audio id="ambient-audio" loop preload="auto">
+    <source
+      src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-chill-medium-version-159456.mp3"
+      type="audio/mpeg">
+  </audio>
+
+  <!-- Reusable City Map & Street Experience Modal -->
+  <div id="city-modal" class="city-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="City Explorer">
+    <div class="city-modal-backdrop" id="city-modal-backdrop"></div>
+    <div class="city-modal-dialog" tabindex="-1">
+      <!-- Modal Header -->
+      <header class="city-modal-header">
+        <div class="city-modal-header-left">
+          <span class="city-modal-tag">ROADS UNTAKEN• DESTINATION DISPATCH</span>
+          <div class="city-modal-title-row">
+            <h2 class="city-modal-title" id="city-modal-title">Tokyo</h2>
+            <span class="city-modal-country" id="city-modal-country">Japan</span>
+          </div>
+          <p class="city-modal-coords" id="city-modal-coords">35.6895° N, 139.6917° E</p>
+        </div>
+        <div class="city-modal-header-right">
+          <div class="city-modal-status-pill" id="city-modal-status">
+            <span class="status-indicator"></span>
+            <span class="status-label" id="city-modal-status-text">FINDING THE CITY…</span>
+          </div>
+          <button type="button" class="city-modal-skip-btn" id="city-modal-skip-btn"
+            title="Skip directly to street video">
+            <span>STREET VIEW</span> →
+          </button>
+          <button type="button" class="city-modal-close" id="city-modal-close" aria-label="Close popup">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Stage -->
+      <div class="city-modal-stage" id="city-modal-stage">
+        <!-- Map Stage -->
+        <div class="city-modal-map-stage" id="city-modal-map-stage">
+          <div id="city-mapbox-container" class="city-mapbox-container"></div>
+          <!-- Gamified HUD Overlay -->
+          <div class="city-map-hud" id="city-map-hud">
+            <div class="hud-corner hud-top-left">
+              <span class="hud-mono" id="hud-target-name">CITY: TOKYO</span>
+              <span class="hud-mono hud-dim" id="hud-camera-zoom">ZOOM: 1.5</span>
+            </div>
+            <div class="hud-corner hud-bottom-left">
+              <span class="hud-label">APPROACH</span>
+              <span class="hud-val" id="hud-altitude-label">ORBITAL VIEW</span>
+            </div>
+            <div class="hud-corner hud-bottom-right">
+              <span class="hud-mono" id="hud-fps-label">STREET LEVEL</span>
+            </div>
+          </div>
+          <!-- Fallback / Token Error if WebGL or Mapbox token fails -->
+          <div class="city-map-fallback" id="city-map-fallback" style="display: none;">
+            <div class="fallback-content">
+              <div class="fallback-badge">MAP PAUSED</div>
+              <h3 class="fallback-title" id="fallback-title">The map needs a moment.</h3>
+              <p class="fallback-desc" id="fallback-desc">Enter a Mapbox public token to load the 3D city view, or
+                continue straight to the street.</p>
+              <div class="fallback-token-row" id="fallback-token-row">
+                <input type="text" id="mapbox-token-input" placeholder="pk.eyJ1..." class="fallback-token-input"
+                  spellcheck="false" autocomplete="off">
+                <button type="button" class="fallback-save-btn" id="fallback-save-btn">Apply Token</button>
+              </div>
+              <div class="fallback-actions">
+                <button type="button" class="fallback-action-btn" id="fallback-action-btn">
+                  Continue to Street Tour →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Video Stage (Full-bleed immersion, Zero-chrome YouTube & local playback) -->
+        <div class="city-modal-video-stage" id="city-modal-video-stage">
+          <div class="city-video-frame" id="city-video-frame">
+            <!-- Zero-Chrome YouTube Player Wrap (scaled & cropped to remove all player UI, title bar, & branding) -->
+            <div class="city-youtube-wrap" id="city-youtube-wrap">
+              <div id="city-youtube-player"></div>
+            </div>
+            <!-- Local HTML5 Video (optional fallback) -->
+            <video id="city-video" class="city-video" muted autoplay loop playsinline preload="metadata" style="display: none;"></video>
+            <!-- Interaction shield to capture clicks and suppress YouTube native hover UI -->
+            <div class="city-video-shield" id="city-video-shield" title="Street View Experience"></div>
+          </div>
+
+          <!-- Custom Minimal Controls HUD -->
+          <div class="city-video-controls-overlay">
+            <button type="button" class="city-video-audio-toggle" id="city-video-audio-btn"
+              aria-label="Toggle Street Sound" title="Toggle Audio (Press M)">
+              <svg class="audio-icon audio-muted-icon" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+              </svg>
+              <svg class="audio-icon audio-unmuted-icon" style="display: block;" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+              <span id="city-video-audio-label">MUTE AUDIO</span>
+            </button>
+          </div>
+
+          <!-- Video Footer HUD -->
+          <div class="city-video-footer-bar" id="city-video-footer-bar">
+            <div class="video-footer-left">
+              <button type="button" class="video-mode-badge-btn" id="video-mode-badge-btn" title="Click to toggle perspective">
+                <span class="video-badge" id="video-mode-badge">WALKING TOUR</span>
+                <span class="video-mode-switch-hint">⇄ SWITCH</span>
+              </button>
+              <span class="video-city-tag" id="video-city-tag">Tokyo, Japan</span>
+            </div>
+            <div class="video-footer-right">
+              <span class="video-tip">ROADS UNTAKEN • STREET IMMERSION</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Smooth Trailing Cursor Follower -->
+  <div class="custom-cursor" id="custom-cursor" aria-hidden="true">
+    <div class="cursor-circle">
+      <span class="cursor-label" id="cursor-label"></span>
+    </div>
+  </div>
+
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="script.js?v=roads_v4"></script>
+</body>
+
+</html>
