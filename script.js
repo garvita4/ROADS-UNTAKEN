@@ -815,6 +815,7 @@ const cityVideo = document.getElementById("city-video");
 const cityVideoShield = document.getElementById("city-video-shield");
 const cityVideoAudioBtn = document.getElementById("city-video-audio-btn");
 const cityVideoAudioLabel = document.getElementById("city-video-audio-label");
+const cityModalFsBtn = document.getElementById("city-modal-fs-btn");
 const cityVideoPlayOverlay = document.getElementById("city-video-play-overlay");
 const cityVideoBigPlay = document.getElementById("city-video-big-play");
 const videoModeBadge = document.getElementById("video-mode-badge");
@@ -1008,22 +1009,87 @@ function toggleStreetAudio() {
     updateAudioButtonUI(isAudioUnmuted);
 }
 
-function toggleStreetPlayPause() {
-    if (activeYtPlayer && typeof activeYtPlayer.getPlayerState === "function") {
-        const state = activeYtPlayer.getPlayerState();
-        if (state === 1) { // PLAYING
-            activeYtPlayer.pauseVideo();
-        } else {
-            activeYtPlayer.playVideo();
-            hidePlayOverlay();
+function toggleBrowserFullscreen() {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        const target = cityModal || document.documentElement;
+        if (target.requestFullscreen) {
+            target.requestFullscreen().catch(() => {});
+        } else if (target.webkitRequestFullscreen) {
+            target.webkitRequestFullscreen();
         }
-    } else if (cityVideo && cityVideo.getAttribute("src")) {
-        if (cityVideo.paused) {
-            cityVideo.play();
-            hidePlayOverlay();
-        } else {
-            cityVideo.pause();
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
         }
+    }
+}
+
+function updateFullscreenUI() {
+    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    if (!cityModalFsBtn) return;
+    const expandIcon = cityModalFsBtn.querySelector(".fs-expand-icon");
+    const compressIcon = cityModalFsBtn.querySelector(".fs-compress-icon");
+    const label = document.getElementById("city-modal-fs-label");
+    if (expandIcon) expandIcon.style.display = isFs ? "none" : "inline-block";
+    if (compressIcon) compressIcon.style.display = isFs ? "inline-block" : "none";
+    if (label) label.textContent = isFs ? "EXIT" : "FULLSCREEN";
+}
+
+let autonomousWatchdogInterval = null;
+
+function ensureStreetAutonomousPlayback() {
+    if (activeYtPlayer && typeof activeYtPlayer.playVideo === "function") {
+        try { activeYtPlayer.playVideo(); } catch (e) {}
+    }
+    if (cityVideo && cityVideo.getAttribute("src")) {
+        try {
+            if (cityVideo.paused) cityVideo.play().catch(() => {});
+        } catch (e) {}
+    }
+}
+
+function startAutonomousWatchdog() {
+    stopAutonomousWatchdog();
+    autonomousWatchdogInterval = setInterval(() => {
+        if (!isModalOpen) return;
+
+        if (activeYtPlayer && typeof activeYtPlayer.getPlayerState === "function") {
+            try {
+                const state = activeYtPlayer.getPlayerState();
+                // State 2: PAUSED, State 0: ENDED, State 5: CUED
+                // Autonomously keep playing - never stop like a YouTube video!
+                if (state === 2 || state === 0 || state === 5) {
+                    activeYtPlayer.playVideo();
+                }
+
+                // Autonomous seamless loop:
+                // Pre-emptively seek back to 0 just before the video ends (within 0.6s),
+                // completely preventing YouTube from ever reaching its ENDED screen / suggested videos grid!
+                if (state === 1 && typeof activeYtPlayer.getCurrentTime === "function" && typeof activeYtPlayer.getDuration === "function") {
+                    const curr = activeYtPlayer.getCurrentTime();
+                    const dur = activeYtPlayer.getDuration();
+                    if (dur > 0 && dur - curr < 0.6) {
+                        activeYtPlayer.seekTo(0, true);
+                        activeYtPlayer.playVideo();
+                    }
+                }
+            } catch (e) {}
+        } else if (cityVideo && cityVideo.getAttribute("src")) {
+            try {
+                if (cityVideo.paused) {
+                    cityVideo.play().catch(() => {});
+                }
+            } catch (e) {}
+        }
+    }, 400);
+}
+
+function stopAutonomousWatchdog() {
+    if (autonomousWatchdogInterval) {
+        clearInterval(autonomousWatchdogInterval);
+        autonomousWatchdogInterval = null;
     }
 }
 
@@ -1047,7 +1113,13 @@ function switchStreetPerspective() {
                     });
                     if (!isAudioUnmuted) {
                         activeYtPlayer.mute();
+                    } else {
+                        try {
+                            activeYtPlayer.unMute();
+                            activeYtPlayer.setVolume(100);
+                        } catch (e) {}
                     }
+                    try { activeYtPlayer.playVideo(); } catch (e) {}
                 }
                 gsap.to(cityVideoFrame, { opacity: 1, duration: 0.45, delay: 0.1 });
             }
@@ -1056,6 +1128,13 @@ function switchStreetPerspective() {
         if (activeYtPlayer && typeof activeYtPlayer.loadVideoById === "function") {
             activeYtPlayer.loadVideoById({ videoId: videoId, startSeconds: 0 });
             if (!isAudioUnmuted) activeYtPlayer.mute();
+            else {
+                try {
+                    activeYtPlayer.unMute();
+                    activeYtPlayer.setVolume(100);
+                } catch (e) {}
+            }
+            try { activeYtPlayer.playVideo(); } catch (e) {}
         }
     }
 }
@@ -1113,6 +1192,7 @@ function startUnderMapPlayback(city) {
                 events: {
                     onReady: (event) => {
                         event.target.playVideo();
+                        startAutonomousWatchdog();
                         if (isAudioUnmuted) {
                             try {
                                 event.target.unMute();
@@ -1131,8 +1211,19 @@ function startUnderMapPlayback(city) {
                             isYtPlaying = true;
                             hideVideoLoading();
                             hidePlayOverlay();
+                        } else if (event.data === YT.PlayerState.PAUSED) {
+                            // Autonomous stream: never pause or stop like a YouTube video!
+                            if (isModalOpen) {
+                                try {
+                                    event.target.playVideo();
+                                } catch (e) {}
+                            }
                         } else if (event.data === YT.PlayerState.ENDED) {
-                            event.target.playVideo();
+                            // Autonomous seamless loop: restart immediately with zero delay
+                            try {
+                                event.target.seekTo(0, true);
+                                event.target.playVideo();
+                            } catch (e) {}
                         }
                     },
                     onError: (err) => {
@@ -1223,6 +1314,8 @@ function executeFinalPush(city) {
                 // 3. Map is destroyed! Only street video remains!
                 destroyMap();
                 updateModalStatus("YOU'RE HERE.");
+                ensureStreetAutonomousPlayback();
+                startAutonomousWatchdog();
 
                 // Unmute audio on reveal by default
                 if (isAudioUnmuted) {
@@ -1247,6 +1340,8 @@ function executeFinalPush(city) {
     } else {
         destroyMap();
         updateModalStatus("YOU'RE HERE.");
+        ensureStreetAutonomousPlayback();
+        startAutonomousWatchdog();
         if (isAudioUnmuted) {
             if (activeYtPlayer && typeof activeYtPlayer.unMute === "function") {
                 try {
@@ -1270,10 +1365,11 @@ function destroyMap() {
         cityMapContainer.innerHTML = "";
     }
     if (cityMapStage) {
-        cityMapStage.style.display = "none";
         if (typeof gsap !== "undefined") {
-            gsap.set(cityMapStage, { clearProps: "all" });
+            gsap.set(cityMapStage, { clearProps: "transform,filter,opacity" });
         }
+        // Keep the stage hidden so it never covers the street video again.
+        cityMapStage.style.display = "none";
     }
 }
 
@@ -1340,7 +1436,8 @@ function openCityModal(cityKey) {
 
     updateModalStatus("FINDING THE CITY…");
 
-    // Clean up previous video player
+    // Clean up previous video player & watchdog
+    stopAutonomousWatchdog();
     destroyYouTubePlayer();
 
     // Reset stages (Map on top z-index:2, Video underneath z-index:1)
@@ -1359,7 +1456,7 @@ function openCityModal(cityKey) {
     if (cityVideoPlayOverlay) cityVideoPlayOverlay.style.display = "none";
     if (cityVideoLoading) cityVideoLoading.hidden = true;
     if (cityVideoFallback) cityVideoFallback.hidden = true;
-    if (cityModalSkipBtn) cityModalSkipBtn.style.display = "inline-flex";
+    if (cityModalSkipBtn) cityModalSkipBtn.style.display = "";
 
     if (cityVideo) {
         cityVideo.muted = false;
@@ -1698,12 +1795,9 @@ function showVideoFallback() {
 }
 
 function showPlayOverlay() {
-    if (cityVideoPlayOverlay) {
-        cityVideoPlayOverlay.style.display = "flex";
-        if (typeof gsap !== "undefined") {
-            gsap.fromTo(cityVideoPlayOverlay, { opacity: 0 }, { opacity: 1, duration: 0.3 });
-        }
-    }
+    // Street video stream is autonomous and continuous - keep play overlays hidden
+    hidePlayOverlay();
+    ensureStreetAutonomousPlayback();
 }
 
 function hidePlayOverlay() {
@@ -1724,6 +1818,7 @@ function closeCityModal() {
     isModalOpen = false;
     isFinalPushTriggered = false;
     underMapPreloadStarted = false;
+    stopAutonomousWatchdog();
 
     if (underMapTimer) {
         clearTimeout(underMapTimer);
@@ -1736,6 +1831,13 @@ function closeCityModal() {
     if (mapFlightTimeout) {
         clearTimeout(mapFlightTimeout);
         mapFlightTimeout = null;
+    }
+
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+        try {
+            if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        } catch (e) {}
     }
 
     // 1. Destroy YouTube player completely
@@ -1781,6 +1883,7 @@ function closeCityModal() {
                     cityModal.setAttribute("aria-hidden", "true");
                 }
                 document.body.classList.remove("city-modal-open");
+                resetCityCardSelection();
                 restoreModalFocus();
             }
         });
@@ -1790,6 +1893,7 @@ function closeCityModal() {
             cityModal.setAttribute("aria-hidden", "true");
         }
         document.body.classList.remove("city-modal-open");
+        resetCityCardSelection();
         restoreModalFocus();
     }
 
@@ -1848,22 +1952,35 @@ if (cityVideoAudioBtn) {
     cityVideoAudioBtn.addEventListener("click", toggleStreetAudio);
 }
 
+if (cityModalFsBtn) {
+    cityModalFsBtn.addEventListener("click", toggleBrowserFullscreen);
+}
+
+document.addEventListener("fullscreenchange", updateFullscreenUI);
+document.addEventListener("webkitfullscreenchange", updateFullscreenUI);
+
 if (videoModeBadgeBtn) {
     videoModeBadgeBtn.addEventListener("click", switchStreetPerspective);
 }
 
 if (cityVideoShield) {
-    cityVideoShield.addEventListener("click", toggleStreetPlayPause);
+    // Autonomous stream: never pause or stop on click!
+    // Clicking toggles audio sound on/off without ever interrupting the video stream.
+    // Double-clicking toggles fullscreen.
+    cityVideoShield.addEventListener("click", () => {
+        ensureStreetAutonomousPlayback();
+        toggleStreetAudio();
+    });
+    cityVideoShield.addEventListener("dblclick", (e) => {
+        e.preventDefault();
+        toggleBrowserFullscreen();
+    });
 }
 
 if (cityVideoBigPlay) {
     cityVideoBigPlay.addEventListener("click", () => {
         hidePlayOverlay();
-        if (activeYtPlayer && typeof activeYtPlayer.playVideo === "function") {
-            try { activeYtPlayer.playVideo(); } catch (e) {}
-        } else if (cityVideo) {
-            cityVideo.play().catch(() => {});
-        }
+        ensureStreetAutonomousPlayback();
     });
 }
 
@@ -1893,9 +2010,17 @@ document.addEventListener("keydown", (e) => {
         return;
     }
 
+    if ((e.key === "f" || e.key === "F") && !e.target.matches("input, textarea")) {
+        e.preventDefault();
+        toggleBrowserFullscreen();
+        return;
+    }
+
     if (e.key === " " && !e.target.matches("input, textarea, button")) {
         e.preventDefault();
-        toggleStreetPlayPause();
+        // Spacebar toggles audio sound without ever pausing or stopping the autonomous video!
+        ensureStreetAutonomousPlayback();
+        toggleStreetAudio();
         return;
     }
 
@@ -1942,7 +2067,8 @@ function scrollCarouselToCity(cityKey) {
         gsap.to(track, {
             scrollLeft: Math.max(0, scrollTarget),
             duration: 0.45,
-            ease: "power2.out"
+            ease: "power2.out",
+            overwrite: true
         });
     } else {
         track.scrollTo({
@@ -1952,8 +2078,8 @@ function scrollCarouselToCity(cityKey) {
     }
 }
 
-function highlightCityCard(cityKey) {
-    const cards = document.querySelectorAll(".s3-city-card");
+function highlightCityCard(cityKey, animate = true) {
+    const cards = Array.from(document.querySelectorAll(".s3-city-card"));
     const targetCard = document.getElementById(`city-card-${cityKey}`);
     if (!targetCard) return;
 
@@ -1965,13 +2091,58 @@ function highlightCityCard(cityKey) {
     targetCard.classList.add("s3-city-selected", "s3-card-focused");
     targetCard.setAttribute("aria-pressed", "true");
 
+    // Keep the search tag, dropdown label, dots, and counter in sync.
+    const cityName = targetCard.querySelector(".s3-city-name")?.textContent.trim() || "";
+
+    const activeTag = document.getElementById("city-active-tag");
+    if (activeTag && cityName) activeTag.textContent = cityName;
+
+    const currentLabel = document.getElementById("selector-current");
+    if (currentLabel && cityName) currentLabel.textContent = cityName;
+
+    const dots = document.querySelectorAll(".carousel-dot");
+    dots.forEach((dot) => {
+        const isActive = dot.getAttribute("data-city") === cityKey;
+        dot.classList.toggle("is-active", isActive);
+        dot.setAttribute("aria-selected", String(isActive));
+    });
+
+    const counter = document.getElementById("carousel-counter");
+    if (counter) {
+        const index = cards.indexOf(targetCard);
+        const total = String(cards.length).padStart(2, "0");
+        counter.textContent = `${String(index + 1).padStart(2, "0")} / ${total} • ${(cityName || "").toUpperCase()}`;
+    }
+
     // Fast, smooth pop feedback (300-400ms)
-    if (typeof gsap !== "undefined") {
+    if (animate && typeof gsap !== "undefined") {
         gsap.fromTo(targetCard,
             { scale: 0.98 },
-            { scale: 1.03, duration: 0.38, ease: "back.out(1.5)" }
+            {
+                scale: 1.03,
+                duration: 0.38,
+                ease: "back.out(1.5)",
+                onComplete: () => {
+                    // Remove the temporary inline transform so the card returns
+                    // to its normal CSS-controlled size/shape.
+                    gsap.set(targetCard, { clearProps: "transform" });
+                }
+            }
         );
     }
+}
+
+function resetCityCardSelection() {
+    document.querySelectorAll(".s3-city-card").forEach((card) => {
+        card.classList.remove("s3-city-selected", "s3-card-focused");
+        card.setAttribute("aria-pressed", "false");
+        if (typeof gsap !== "undefined") {
+            gsap.killTweensOf(card);
+            gsap.set(card, { clearProps: "transform" });
+        } else {
+            card.style.transform = "";
+        }
+    });
 }
 
 function setupCityDropdownSelector() {
@@ -2064,29 +2235,17 @@ s3CityCards.forEach((card) => {
     card.addEventListener("click", (e) => {
         e.preventDefault();
 
-        s3CityCards.forEach((item) => {
-            item.classList.remove("s3-city-selected", "s3-card-focused");
-            item.setAttribute("aria-pressed", "false");
-        });
-
-        card.classList.add("s3-city-selected", "s3-card-focused");
-        card.setAttribute("aria-pressed", "true");
-
         // Read selected city key from data-city
         const rawCity = card.getAttribute("data-city") || "";
         const cityKey = rawCity.toLowerCase().replace(/\s+/g, "");
 
-        // Sync dropdown label
-        const currentLabel = document.getElementById("selector-current");
-        if (currentLabel) {
-            currentLabel.textContent = rawCity;
-        }
-
+        highlightCityCard(cityKey);
         openCityModal(cityKey);
     });
 });
 
 setupCityDropdownSelector();
+setupCitySearch();
 setupCarouselArrows();
 
 // Auto-open city modal if requested via URL param (e.g. ?openCity=paris)
@@ -2393,7 +2552,7 @@ if (document.readyState === "loading") {
 }
 
 
-function setupCityDropdownSelector() {
+function setupCitySearch() {
     const input = document.getElementById("city-search-input");
     const results = document.getElementById("city-search-results");
     const clearBtn = document.getElementById("city-search-clear");
@@ -2453,7 +2612,7 @@ function setupCityDropdownSelector() {
         // Never display the complete city list when the search is empty.
         if (!normalizedQuery) {
             closeResults();
-            return;
+            return [];
         }
 
         const matches = cities.filter((city) =>
@@ -2493,11 +2652,22 @@ function setupCityDropdownSelector() {
 
         results.hidden = false;
         input.setAttribute("aria-expanded", "true");
+
+        return matches;
     }
 
     input.addEventListener("input", () => {
         clearBtn.hidden = input.value.length === 0;
-        renderResults(input.value);
+
+        const matches = renderResults(input.value);
+
+        // As the user types, follow the first matching city with the carousel
+        // and keep the active tag/dot/counter next to the search in sync.
+        if (matches.length > 0) {
+            const primaryMatch = matches[0];
+            highlightCityCard(primaryMatch.key, false);
+            scrollCarouselToCity(primaryMatch.key);
+        }
     });
 
     input.addEventListener("keydown", (event) => {
